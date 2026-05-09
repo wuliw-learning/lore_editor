@@ -308,8 +308,10 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
             {block.type === 'callout' ? <span className="callout-icon">{String(block.metadata.icon ?? 'i')}</span> : null}
             {block.type === 'divider' ? <hr className="divider" /> : null}
             {block.type === 'page_link' && linkedPageId ? (
-              <div className="page-link">
-                <span className="page-link-icon">+</span>
+              <button className="page-link" onClick={() => navigate(`/pages/${linkedPageId}`)}>
+                <span className="page-link-icon" aria-hidden="true">
+                  <span className="page-link-icon-paper" />
+                </span>
                 <span className="page-link-copy">
                   <input
                     ref={(element) => {
@@ -317,6 +319,8 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                     }}
                     className="page-link-title"
                     value={linkedPageTitle || 'Untitled page'}
+                    onMouseDown={(event) => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
                     onChange={(event) => setPageLinkDrafts((current) => ({ ...current, [linkedPageId]: event.target.value }))}
                     onBlur={() => void saveLinkedPageTitle(block.id, linkedPageId, linkedPageTitle || 'Untitled page')}
                     onKeyDown={(event) => {
@@ -338,10 +342,8 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                   />
                   <span>Nested page</span>
                 </span>
-                <button className="page-link-open" onClick={() => navigate(`/pages/${linkedPageId}`)}>
-                  Open
-                </button>
-              </div>
+                <span className="page-link-open">Open</span>
+              </button>
             ) : null}
             {block.type !== 'divider' && block.type !== 'page_link' ? (
               <div className="block-input-wrap">

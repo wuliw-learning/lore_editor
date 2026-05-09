@@ -503,6 +503,7 @@ input:focus {
   padding: 0.8rem 0.95rem;
   text-align: left;
   transition: background 0.16s ease, border-color 0.16s ease;
+  cursor: pointer;
 }
 
 .page-link:hover,
@@ -523,6 +524,29 @@ input:focus {
   font-weight: 700;
 }
 
+.page-link-icon-paper {
+  width: 0.92rem;
+  height: 1.08rem;
+  display: inline-block;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.78);
+  position: relative;
+}
+
+.page-link-icon-paper::after {
+  content: '';
+  position: absolute;
+  top: 0.12rem;
+  right: 0.12rem;
+  width: 0.18rem;
+  height: 0.18rem;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.8;
+}
+
 .page-link-copy {
   display: grid;
   gap: 0.15rem;
@@ -541,6 +565,7 @@ input:focus {
   font-size: 0.98rem;
   font-weight: 700;
   color: #324c72;
+  cursor: text;
 }
 
 .page-link-title:focus {
@@ -551,17 +576,10 @@ input:focus {
 }
 
 .page-link-open {
-  border: none;
-  background: transparent;
   color: #5b7194;
-  border-radius: 10px;
-  padding: 0.45rem 0.55rem;
-  cursor: pointer;
+  padding: 0.45rem 0.1rem 0.45rem 0.55rem;
   font-size: 0.9rem;
-}
-
-.page-link-open:hover {
-  background: rgba(101, 120, 153, 0.08);
+  white-space: nowrap;
 }
 
 .slash-menu {
