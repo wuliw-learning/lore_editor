@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { createBlock, createPage, deleteBlockApi, listBlocks, reorderBlocks, updateBlock } from '../api/pages'
+import { createBlock, createPage, deleteBlockApi, listBlocks, reorderBlocks, updateBlock, updatePage } from '../api/pages'
 import { useDebouncedEffect } from '../hooks/useDebouncedEffect'
 import type { Block, Page } from '../types'
 import { Button } from '../components/Button'
@@ -37,6 +37,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   const [error, setError] = useState('')
   const [slash, setSlash] = useState<SlashState>(null)
   const [focusBlockId, setFocusBlockId] = useState<number | null>(null)
+  const [pageLinkDrafts, setPageLinkDrafts] = useState<Record<number, string>>({})
   const inputRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
 
   const sortedBlocks = useMemo(() => [...blocks].sort((a, b) => a.sort_order - b.sort_order), [blocks])
@@ -51,6 +52,16 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   useEffect(() => {
     Object.values(inputRefs.current).forEach((element) => syncHeight(element))
   }, [sortedBlocks])
+
+  useEffect(() => {
+    setPageLinkDrafts((current) => {
+      const next = { ...current }
+      for (const page of pages) {
+        next[page.id] = page.title
+      }
+      return next
+    })
+  }, [pages])
 
   useEffect(() => {
     if (focusBlockId === null) return
@@ -139,6 +150,14 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     setFocusBlockId(fallbackBlockId)
   }
 
+  const saveLinkedPageTitle = async (blockId: number, linkedPageId: number, value: string) => {
+    const nextTitle = value.trim() || 'Untitled page'
+    setPageLinkDrafts((current) => ({ ...current, [linkedPageId]: nextTitle }))
+    patchBlock(blockId, { content: nextTitle })
+    await updatePage(linkedPageId, { title: nextTitle })
+    await onRefreshPages()
+  }
+
   const selectSlashType = async (blockId: number, type: string) => {
     const block = blocks.find((item) => item.id === blockId)
     if (!block) return
@@ -173,7 +192,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
       {sortedBlocks.map((block, index) => {
         const toggleExpanded = Boolean(block.metadata.expanded)
         const linkedPageId = typeof block.metadata.linked_page_id === 'number' ? Number(block.metadata.linked_page_id) : null
-        const linkedPageTitle = linkedPageId ? pageTitleMap.get(linkedPageId) ?? block.content ?? 'Untitled page' : block.content ?? 'Untitled page'
+        const linkedPageTitle = linkedPageId ? pageLinkDrafts[linkedPageId] ?? pageTitleMap.get(linkedPageId) ?? block.content ?? 'Untitled page' : block.content ?? 'Untitled page'
         const lineNumber = block.type === 'numbered_list'
           ? 1 + sortedBlocks.slice(0, index).reduce((count, item) => (item.type === 'numbered_list' ? count + 1 : 0), 0)
           : null
@@ -204,13 +223,27 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
             {block.type === 'callout' ? <span className="callout-icon">{String(block.metadata.icon ?? 'i')}</span> : null}
             {block.type === 'divider' ? <hr className="divider" /> : null}
             {block.type === 'page_link' && linkedPageId ? (
-              <button className="page-link" onClick={() => navigate(`/pages/${linkedPageId}`)}>
+              <div className="page-link">
                 <span className="page-link-icon">+</span>
                 <span className="page-link-copy">
-                  <strong>{linkedPageTitle || 'Untitled page'}</strong>
-                  <span>Open nested page</span>
+                  <input
+                    className="page-link-title"
+                    value={linkedPageTitle || 'Untitled page'}
+                    onChange={(event) => setPageLinkDrafts((current) => ({ ...current, [linkedPageId]: event.target.value }))}
+                    onBlur={() => void saveLinkedPageTitle(block.id, linkedPageId, linkedPageTitle || 'Untitled page')}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.currentTarget.blur()
+                      }
+                    }}
+                  />
+                  <span>Nested page</span>
                 </span>
-              </button>
+                <button className="page-link-open" onClick={() => navigate(`/pages/${linkedPageId}`)}>
+                  Open
+                </button>
+              </div>
             ) : null}
             {block.type !== 'divider' && block.type !== 'page_link' ? (
               <div className="block-input-wrap">

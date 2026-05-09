@@ -412,7 +412,6 @@ input:focus {
   color: #24448f;
   border-radius: 16px;
   padding: 0.9rem 1rem;
-  cursor: pointer;
   text-align: left;
 }
 
@@ -431,15 +430,36 @@ input:focus {
 .page-link-copy {
   display: grid;
   gap: 0.15rem;
-}
-
-.page-link-copy strong {
-  font-size: 0.98rem;
+  flex: 1;
 }
 
 .page-link-copy span {
   color: #61728a;
   font-size: 0.86rem;
+}
+
+.page-link-title {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #24448f;
+}
+
+.page-link-title:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.page-link-open {
+  border: none;
+  background: rgba(43, 92, 255, 0.1);
+  color: #24448f;
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  cursor: pointer;
 }
 
 .slash-menu {
