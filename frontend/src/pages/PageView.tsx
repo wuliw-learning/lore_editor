@@ -68,26 +68,28 @@ export function PageView({ pages, onRefreshPages }: Props) {
       </div>
       <div className="page-toolbar">
         <input className="page-title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Untitled" />
-        <div className="toolbar-actions">
-          <span className="muted small">{status}</span>
-          <Button onClick={async () => {
-            if (page.is_favorite) {
-              await unfavoritePage(page.id)
-            } else {
-              await favoritePage(page.id)
-            }
-            await refresh()
-            await onRefreshPages()
-          }}>{page.is_favorite ? 'Unfavorite' : 'Favorite'}</Button>
-          <Button variant="danger" onClick={async () => {
-            try {
-              await deletePage(page.id)
+        <div className="page-toolbar-actions">
+          <span className="page-status muted small">{status || 'Autosave'}</span>
+          <div className="toolbar-actions">
+            <Button className="page-action-button" onClick={async () => {
+              if (page.is_favorite) {
+                await unfavoritePage(page.id)
+              } else {
+                await favoritePage(page.id)
+              }
+              await refresh()
               await onRefreshPages()
-              navigate('/')
-            } catch (err) {
-              setError(err instanceof Error ? err.message : 'Delete failed')
-            }
-          }}>Delete</Button>
+            }}>{page.is_favorite ? 'Unfavorite' : 'Favorite'}</Button>
+            <Button className="page-action-button" variant="danger" onClick={async () => {
+              try {
+                await deletePage(page.id)
+                await onRefreshPages()
+                navigate('/')
+              } catch (err) {
+                setError(err instanceof Error ? err.message : 'Delete failed')
+              }
+            }}>Delete</Button>
+          </div>
         </div>
       </div>
       <BlockEditor pageId={page.id} pages={pages} onRefreshPages={onRefreshPages} onSavingState={setStatus} />

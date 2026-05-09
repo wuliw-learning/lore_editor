@@ -271,6 +271,32 @@ input:focus {
   gap: 1.25rem;
 }
 
+.page-toolbar {
+  align-items: flex-start;
+}
+
+.page-toolbar-actions {
+  display: grid;
+  justify-items: end;
+  gap: 0.45rem;
+  min-width: 176px;
+  padding-top: 0.35rem;
+}
+
+.page-status {
+  color: #708199;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.page-action-button {
+  min-width: 110px;
+}
+
 .page-title-input {
   width: 100%;
   border: none;
@@ -638,6 +664,13 @@ input:focus {
   .section-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .page-toolbar-actions {
+    width: 100%;
+    justify-items: start;
+    min-width: 0;
+    padding-top: 0;
   }
 }
 
