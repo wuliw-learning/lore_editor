@@ -242,6 +242,14 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     await onRefreshPages()
   }
 
+  const convertPageLinkToText = (blockId: number, fallbackContent: string) => {
+    patchBlock(blockId, {
+      type: 'text',
+      content: fallbackContent.trim() || 'Deleted page',
+      metadata: {},
+    })
+  }
+
   const selectSlashType = async (blockId: number, type: string) => {
     const block = blocks.find((item) => item.id === blockId)
     if (!block) return
@@ -276,6 +284,8 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
       {sortedBlocks.map((block, index) => {
         const toggleExpanded = Boolean(block.metadata.expanded)
         const linkedPageId = typeof block.metadata.linked_page_id === 'number' ? Number(block.metadata.linked_page_id) : null
+        const hasLinkedPage = linkedPageId ? pageTitleMap.has(linkedPageId) : false
+        const isBrokenPageLink = block.type === 'page_link' && Boolean(linkedPageId) && !hasLinkedPage
         const linkedPageTitle = linkedPageId ? pageLinkDrafts[linkedPageId] ?? pageTitleMap.get(linkedPageId) ?? block.content ?? 'Untitled page' : block.content ?? 'Untitled page'
         const lineNumber = block.type === 'numbered_list'
           ? 1 + sortedBlocks.slice(0, index).reduce((count, item) => (item.type === 'numbered_list' ? count + 1 : 0), 0)
@@ -307,7 +317,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
             {block.type === 'quote' ? <span className="quote-bar" /> : null}
             {block.type === 'callout' ? <span className="callout-icon">{String(block.metadata.icon ?? 'i')}</span> : null}
             {block.type === 'divider' ? <hr className="divider" /> : null}
-            {block.type === 'page_link' && linkedPageId ? (
+            {block.type === 'page_link' && linkedPageId && !isBrokenPageLink ? (
               <button className="page-link" onClick={() => navigate(`/pages/${linkedPageId}`)}>
                 <span className="page-link-icon" aria-hidden="true">
                   <span className="page-link-icon-paper" />
@@ -344,6 +354,41 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                 </span>
                 <span className="page-link-open">Open</span>
               </button>
+            ) : null}
+            {isBrokenPageLink ? (
+              <div className="page-link page-link-broken">
+                <span className="page-link-icon" aria-hidden="true">
+                  <span className="page-link-icon-paper" />
+                </span>
+                <span className="page-link-copy">
+                  <input
+                    className="page-link-title"
+                    value={block.content || 'Deleted page'}
+                    onChange={(event) => patchBlock(block.id, { content: event.target.value })}
+                    onBlur={() => convertPageLinkToText(block.id, block.content || 'Deleted page')}
+                    onKeyDown={(event) => {
+                      if (event.altKey && event.key === 'ArrowUp') {
+                        event.preventDefault()
+                        focusAdjacentBlock(index, -1, 'end')
+                        return
+                      }
+                      if (event.altKey && event.key === 'ArrowDown') {
+                        event.preventDefault()
+                        focusAdjacentBlock(index, 1, 'start')
+                        return
+                      }
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.currentTarget.blur()
+                      }
+                    }}
+                  />
+                  <span>Deleted page reference</span>
+                </span>
+                <button className="page-link-open" onClick={() => convertPageLinkToText(block.id, block.content || 'Deleted page')}>
+                  Convert
+                </button>
+              </div>
             ) : null}
             {block.type !== 'divider' && block.type !== 'page_link' ? (
               <div className="block-input-wrap">

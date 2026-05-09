@@ -19,6 +19,7 @@ export function PageView({ pages, onRefreshPages }: Props) {
   const [title, setTitle] = useState('')
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
+  const parentPageId = pages.find((candidate) => candidate.id === pageId)?.parent_id ?? null
 
   const refresh = async () => {
     try {
@@ -53,7 +54,20 @@ export function PageView({ pages, onRefreshPages }: Props) {
     return () => window.clearTimeout(timer)
   }, [title, page, onRefreshPages])
 
-  if (error) return <div className="page-state error-box">{error}</div>
+  if (error) {
+    return (
+      <div className="page-state page-missing-state">
+        <div className="error-box page-missing-card">
+          <h2>Page not found</h2>
+          <p className="muted">This page may have been deleted. You can return to your workspace or go back to the parent page.</p>
+          <div className="page-missing-actions">
+            {parentPageId ? <Button onClick={() => navigate(`/pages/${parentPageId}`)}>Open parent</Button> : null}
+            <Button onClick={() => navigate('/')}>Go home</Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
   if (!page) return <div className="page-state">Loading page...</div>
 
   return (

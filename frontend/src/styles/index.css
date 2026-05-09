@@ -534,6 +534,18 @@ input:focus {
   border-color: rgba(201, 211, 225, 0.82);
 }
 
+.page-link-broken {
+  cursor: default;
+  background: rgba(249, 241, 242, 0.9);
+  border-color: rgba(237, 196, 203, 0.9);
+}
+
+.page-link-broken:hover,
+.editor-block:focus-within .page-link-broken {
+  background: rgba(249, 241, 242, 0.96);
+  border-color: rgba(230, 184, 192, 0.92);
+}
+
 .page-link-icon {
   width: 2rem;
   height: 2rem;
@@ -602,6 +614,29 @@ input:focus {
   padding: 0.45rem 0.1rem 0.45rem 0.55rem;
   font-size: 0.9rem;
   white-space: nowrap;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.page-missing-state {
+  min-height: calc(100vh - 8rem);
+}
+
+.page-missing-card {
+  width: min(520px, calc(100vw - 2rem));
+  display: grid;
+  gap: 1rem;
+}
+
+.page-missing-card h2,
+.page-missing-card p {
+  margin: 0;
+}
+
+.page-missing-actions {
+  display: flex;
+  gap: 0.75rem;
 }
 
 .slash-menu {
