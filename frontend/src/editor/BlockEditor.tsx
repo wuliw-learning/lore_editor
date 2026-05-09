@@ -48,6 +48,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   const [error, setError] = useState('')
   const [slash, setSlash] = useState<SlashState>(null)
   const [focusBlockId, setFocusBlockId] = useState<number | null>(null)
+  const [skipNextEnterBlockId, setSkipNextEnterBlockId] = useState<number | null>(null)
   const [pageLinkDrafts, setPageLinkDrafts] = useState<Record<number, string>>({})
   const inputRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
   const pageLinkTitleRefs = useRef<Record<number, HTMLInputElement | null>>({})
@@ -263,6 +264,8 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
         metadata: { linked_page_id: child.id },
       })
       await onRefreshPages()
+      setSkipNextEnterBlockId(blockId)
+      setFocusBlockId(blockId)
       setSlash(null)
       return
     }
@@ -272,6 +275,8 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
       content: type === 'divider' ? '' : block.content.replace(/\\[^\\s]*$/, ''),
       metadata: emptyMetadataForType(type),
     })
+    setSkipNextEnterBlockId(blockId)
+    setFocusBlockId(blockId)
     setSlash(null)
   }
 
@@ -402,6 +407,9 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                   placeholder={index === 0 ? 'Start typing or enter \\ to choose a block' : ''}
                   onChange={(event) => {
                     const value = event.target.value
+                    if (skipNextEnterBlockId === block.id) {
+                      setSkipNextEnterBlockId(null)
+                    }
                     patchBlock(block.id, { content: value })
                     syncHeight(event.target)
                     const match = value.match(/\\([^\\s]*)$/)
@@ -449,6 +457,10 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                     }
                     if (event.key === 'Enter' && !event.shiftKey && slash?.blockId !== block.id) {
                       event.preventDefault()
+                      if (skipNextEnterBlockId === block.id) {
+                        setSkipNextEnterBlockId(null)
+                        return
+                      }
                       if (isListLikeBlock(block.type) && !block.content.trim()) {
                         patchBlock(block.id, { type: 'text', metadata: {} })
                         return
