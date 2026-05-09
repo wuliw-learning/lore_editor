@@ -200,6 +200,13 @@ input:focus {
   gap: 0.75rem;
 }
 
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
 .sidebar-nav {
   display: grid;
   gap: 1rem;
@@ -221,17 +228,22 @@ input:focus {
   font-size: 0.96rem;
 }
 
-.sidebar-create-button {
-  min-height: 2.35rem;
-  padding-inline: 0.9rem;
-}
-
 .sidebar-nav-button,
 .sidebar-footer-button {
   min-height: 2.3rem;
   border-radius: 10px;
   background: rgba(232, 238, 248, 0.78);
   color: #3b4b61;
+  box-shadow: none;
+}
+
+.sidebar-inline-create {
+  min-height: 2rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(232, 238, 248, 0.78);
+  color: #3b4b61;
+  font-size: 0.9rem;
   box-shadow: none;
 }
 

@@ -32,9 +32,6 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
             <div className="eyebrow">Personal wiki</div>
             <h1>Lore</h1>
           </div>
-          <Button className="sidebar-create-button" variant="primary" onClick={onCreatePage}>
-            New page
-          </Button>
         </div>
         <div className="sidebar-actions">
           <Button className="sidebar-nav-button" onClick={onOpenSearch}>Search</Button>
@@ -52,7 +49,12 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
             ))}
           </div>
           <div className="sidebar-section">
-            <div className="section-title">Pages</div>
+            <div className="section-header-row">
+              <div className="section-title">Pages</div>
+              <Button className="sidebar-inline-create" onClick={onCreatePage}>
+                + New
+              </Button>
+            </div>
             {roots.length === 0 ? <div className="muted small">Create your first page</div> : null}
             {roots.map((page) => (
               <NavLink key={page.id} to={`/pages/${page.id}`} className={({ isActive }) => `nav-item nav-page-item${isActive ? ' active' : ''}`}>
