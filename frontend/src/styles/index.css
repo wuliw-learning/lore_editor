@@ -331,6 +331,7 @@ input:focus {
 .editor-shell {
   display: grid;
   gap: 0.5rem;
+  padding-bottom: min(28vh, 280px);
 }
 
 .editor-block {
