@@ -1,0 +1,14 @@
+export const blockOptions = [
+  { type: 'text', label: 'Text' },
+  { type: 'page_link', label: 'Page' },
+  { type: 'todo', label: 'To-do list' },
+  { type: 'heading_1', label: 'Heading 1' },
+  { type: 'heading_2', label: 'Heading 2' },
+  { type: 'heading_3', label: 'Heading 3' },
+  { type: 'bulleted_list', label: 'Bulleted list' },
+  { type: 'numbered_list', label: 'Numbered list' },
+  { type: 'toggle', label: 'Toggle list' },
+  { type: 'quote', label: 'Quote' },
+  { type: 'divider', label: 'Divider' },
+  { type: 'callout', label: 'Callout' },
+]
