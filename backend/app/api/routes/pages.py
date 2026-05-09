@@ -105,6 +105,14 @@ def delete_page(
     if child_exists is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Cannot delete a page with child pages")
 
+    linked_blocks = db.scalars(select(Block).where(Block.type == "page_link")).all()
+    for block in linked_blocks:
+        linked_page_id = block.meta.get("linked_page_id") if isinstance(block.meta, dict) else None
+        if linked_page_id == page_id:
+            block.type = "text"
+            block.content = (block.content or page.title or "Deleted page").strip() or "Deleted page"
+            block.meta = {"broken_page_reference": True}
+
     db.delete(page)
     db.commit()
     return {"status": "ok"}
