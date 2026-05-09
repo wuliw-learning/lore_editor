@@ -32,21 +32,21 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
             <div className="eyebrow">Personal wiki</div>
             <h1>Lore</h1>
           </div>
-          <Button variant="primary" onClick={onCreatePage}>
+          <Button className="sidebar-create-button" variant="primary" onClick={onCreatePage}>
             New page
           </Button>
         </div>
         <div className="sidebar-actions">
-          <Button onClick={onOpenSearch}>Search</Button>
-          <Button onClick={() => navigate('/files')}>Files</Button>
-          <Button onClick={() => navigate('/settings')}>Settings</Button>
+          <Button className="sidebar-nav-button" onClick={onOpenSearch}>Search</Button>
+          <Button className="sidebar-nav-button" onClick={() => navigate('/files')}>Files</Button>
+          <Button className="sidebar-nav-button" onClick={() => navigate('/settings')}>Settings</Button>
         </div>
         <nav className="sidebar-nav">
           <div className="sidebar-section">
             <div className="section-title">Favorites</div>
             {favorites.length === 0 ? <div className="muted small">No favorites yet</div> : null}
             {favorites.map((page) => (
-              <NavLink key={`favorite-${page.id}`} to={`/pages/${page.id}`} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+              <NavLink key={`favorite-${page.id}`} to={`/pages/${page.id}`} className={({ isActive }) => `nav-item nav-page-item${isActive ? ' active' : ''}`}>
                 {page.title}
               </NavLink>
             ))}
@@ -55,7 +55,7 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
             <div className="section-title">Pages</div>
             {roots.length === 0 ? <div className="muted small">Create your first page</div> : null}
             {roots.map((page) => (
-              <NavLink key={page.id} to={`/pages/${page.id}`} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+              <NavLink key={page.id} to={`/pages/${page.id}`} className={({ isActive }) => `nav-item nav-page-item${isActive ? ' active' : ''}`}>
                 {page.title}
               </NavLink>
             ))}
@@ -64,8 +64,8 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
         <div className="sidebar-footer">
           <div className="muted small">Signed in as {user.username}</div>
           <div className="footer-actions">
-            <Button onClick={onOpenHotkeys}>Hotkeys</Button>
-            <Button variant="danger" onClick={onLogout}>
+            <Button className="sidebar-footer-button" onClick={onOpenHotkeys}>Hotkeys</Button>
+            <Button className="sidebar-footer-button" variant="danger" onClick={onLogout}>
               Logout
             </Button>
           </div>
