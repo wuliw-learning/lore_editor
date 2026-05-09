@@ -23,10 +23,12 @@ The project is designed for simple personal hosting on a VDS. One container redu
 
 ## Data Storage
 
-- SQLite database path: `./data/lore.db`
-- Upload directory: `./storage/uploads`
+- SQLite database path in container: `/app/data/lore.db`
+- Upload directory in container: `/app/storage/uploads`
 
 Both locations are mounted from the host with Docker volumes so data survives restarts.
+
+If an older container wrote data into the mistaken legacy path under `/app/backend/...`, startup migration moves the database and uploads into the mounted directories automatically when the new target is empty.
 
 ## Authentication
 

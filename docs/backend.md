@@ -101,7 +101,9 @@ All non-login routes require the auth dependency from `app/api/deps.py`.
 
 - The engine is configured with `check_same_thread=False` for SQLite.
 - Tables are created on startup by `init_db()`.
-- The default DB file path is configured through `DATABASE_URL`.
+- The default DB file path is configured through `DATABASE_URL` and should point to `/app/data/lore.db` in Docker.
+- `UPLOAD_DIR` should point to `/app/storage/uploads` in Docker.
+- Startup includes a small legacy migration step that copies the old misplaced SQLite file from `/app/backend/data/` and moves uploads from `/app/backend/storage/uploads/` if the corrected target path is still empty.
 
 ## File Upload Limits
 

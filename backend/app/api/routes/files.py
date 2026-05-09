@@ -37,7 +37,7 @@ async def upload_file(
     if len(data) > size_limit:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File exceeds upload limit")
 
-    upload_dir = Path(settings.upload_dir)
+    upload_dir = settings.resolved_upload_dir
     upload_dir.mkdir(parents=True, exist_ok=True)
     suffix = Path(file.filename or "").suffix
     stored_name = f"{uuid.uuid4().hex}{suffix}"
@@ -66,7 +66,7 @@ def download_file(
     item = db.get(UploadedFileModel, file_id)
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
-    file_path = Path(settings.upload_dir) / item.stored_name
+    file_path = settings.resolved_upload_dir / item.stored_name
     if not file_path.exists():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Stored file not found")
 
@@ -82,7 +82,7 @@ def delete_file(
     item = db.get(UploadedFileModel, file_id)
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
-    file_path = Path(settings.upload_dir) / item.stored_name
+    file_path = settings.resolved_upload_dir / item.stored_name
     if file_path.exists():
         os.remove(file_path)
     db.delete(item)

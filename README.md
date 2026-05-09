@@ -50,8 +50,8 @@ docker compose down
 LORE_USERNAME=admin
 LORE_PASSWORD=change_me_strong_password
 SECRET_KEY=change_me_secret_key
-DATABASE_URL=sqlite:///./data/lore.db
-UPLOAD_DIR=./storage/uploads
+DATABASE_URL=sqlite:////app/data/lore.db
+UPLOAD_DIR=/app/storage/uploads
 MAX_UPLOAD_SIZE_MB=20
 APP_HOST=0.0.0.0
 APP_PORT=8080
@@ -107,8 +107,9 @@ APP_PORT=8080
 
 ## Data Storage
 
-- SQLite DB: `./data/lore.db`
-- Uploaded files: `./storage/uploads`
+- SQLite DB in container: `/app/data/lore.db`
+- Uploaded files in container: `/app/storage/uploads`
+- Host volumes: `./data` and `./storage/uploads`
 - Both are mounted as volumes in `docker-compose.yml`
 
 ## Main Commands
@@ -130,3 +131,4 @@ docker compose down
 - Page deletion is blocked if the page has child pages.
 - The first version uses exact-match style `LIKE` search rather than full text indexing.
 - Toggle blocks use a simple title/body model rather than nested block trees.
+- On startup, Lore migrates legacy data from the old mistaken `/app/backend/...` storage path into `/app/data` and `/app/storage/uploads` when needed.

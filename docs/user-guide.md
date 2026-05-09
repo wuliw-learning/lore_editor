@@ -4,13 +4,19 @@
 
 1. Copy `.env.example` to `.env`.
 2. Set your username, password, and secret key.
-3. Run:
+3. Keep the storage paths pointed at the mounted container directories:
+
+```env
+DATABASE_URL=sqlite:////app/data/lore.db
+UPLOAD_DIR=/app/storage/uploads
+```
+4. Run:
 
 ```bash
 docker compose up --build
 ```
 
-4. Open `http://server_ip/`.
+5. Open `http://server_ip/`.
 
 ## Sign In
 
