@@ -41,6 +41,19 @@ function splitIntoParagraphBlocks(value: string): string[] {
     .filter(Boolean)
 }
 
+function getBlockPlaceholder(type: string, isFirstBlock: boolean): string {
+  if (type === 'heading_1') return 'Heading 1'
+  if (type === 'heading_2') return 'Heading 2'
+  if (type === 'heading_3') return 'Heading 3'
+  if (type === 'quote') return 'Quote'
+  if (type === 'callout') return 'Callout'
+  if (type === 'toggle') return 'Toggle title'
+  if (type === 'todo') return 'To-do'
+  if (type === 'bulleted_list') return 'List item'
+  if (type === 'numbered_list') return 'List item'
+  return isFirstBlock ? 'Start typing or enter \\ to choose a block' : ''
+}
+
 export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Props) {
   const navigate = useNavigate()
   const [blocks, setBlocks] = useState<Block[]>([])
@@ -404,7 +417,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                   }}
                   className={`block-input input-${block.type}${block.type === 'todo' && Boolean(block.metadata.checked) ? ' todo-complete' : ''}`}
                   value={block.content}
-                  placeholder={index === 0 ? 'Start typing or enter \\ to choose a block' : ''}
+                  placeholder={getBlockPlaceholder(block.type, index === 0)}
                   onChange={(event) => {
                     const value = event.target.value
                     if (skipNextEnterBlockId === block.id) {
