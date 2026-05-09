@@ -11,6 +11,8 @@ const shortcuts = [
   ['Ctrl + /', 'Open hotkeys help'],
   ['Esc', 'Close modal or slash menu'],
   ['ArrowUp / ArrowDown', 'Navigate slash menu'],
+  ['Alt + ArrowUp', 'Move to previous block'],
+  ['Alt + ArrowDown', 'Move to next block'],
   ['Enter', 'Select slash item or create next block'],
 ]
 
