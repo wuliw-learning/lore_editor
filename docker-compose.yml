@@ -1,0 +1,12 @@
+services:
+  lore:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./storage:/app/storage
