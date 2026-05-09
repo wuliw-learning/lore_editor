@@ -30,6 +30,10 @@ function stripSlashCommand(value: string): string {
   return value.replace(/\\[^\\s]*$/, '').trim()
 }
 
+function isListLikeBlock(type: string): boolean {
+  return type === 'todo' || type === 'bulleted_list' || type === 'numbered_list'
+}
+
 export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Props) {
   const navigate = useNavigate()
   const [blocks, setBlocks] = useState<Block[]>([])
@@ -273,6 +277,10 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                     }
                     if (event.key === 'Enter' && !event.shiftKey && slash?.blockId !== block.id) {
                       event.preventDefault()
+                      if (isListLikeBlock(block.type) && !block.content.trim()) {
+                        patchBlock(block.id, { type: 'text', metadata: {} })
+                        return
+                      }
                       await appendBlock(block.sort_order, block.type === 'todo' ? 'todo' : block.type === 'numbered_list' ? 'numbered_list' : block.type === 'bulleted_list' ? 'bulleted_list' : 'text')
                     }
                     if (event.key === 'ArrowUp' && event.currentTarget.selectionStart === 0) {
