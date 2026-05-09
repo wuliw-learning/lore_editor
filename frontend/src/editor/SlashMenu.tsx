@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { blockOptions } from './blockTypes'
 
@@ -11,10 +11,16 @@ type Props = {
 export function SlashMenu({ query, onSelect, onClose }: Props) {
   const items = useMemo(() => blockOptions.filter((option) => option.label.toLowerCase().includes(query.toLowerCase())), [query])
   const [index, setIndex] = useState(0)
+  const itemRefs = useRef<Record<number, HTMLButtonElement | null>>({})
 
   useEffect(() => {
     setIndex(0)
   }, [query])
+
+  useEffect(() => {
+    const activeItem = itemRefs.current[index]
+    activeItem?.scrollIntoView({ block: 'nearest' })
+  }, [index])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -46,6 +52,9 @@ export function SlashMenu({ query, onSelect, onClose }: Props) {
       {items.map((item, itemIndex) => (
         <button
           key={item.type}
+          ref={(element) => {
+            itemRefs.current[itemIndex] = element
+          }}
           className={`slash-item ${itemIndex === index ? 'active' : ''}`}
           onMouseEnter={() => setIndex(itemIndex)}
           onMouseDown={(event) => {
