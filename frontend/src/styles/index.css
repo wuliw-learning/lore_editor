@@ -403,12 +403,43 @@ input:focus {
 }
 
 .page-link {
-  border: none;
-  background: #edf4ff;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid #dfe6f2;
+  background: linear-gradient(180deg, #f7faff 0%, #eef4ff 100%);
   color: #24448f;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 0.9rem 1rem;
   cursor: pointer;
+  text-align: left;
+}
+
+.page-link-icon {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(43, 92, 255, 0.12);
+  color: #2b5cff;
+  font-weight: 700;
+}
+
+.page-link-copy {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.page-link-copy strong {
+  font-size: 0.98rem;
+}
+
+.page-link-copy span {
+  color: #61728a;
+  font-size: 0.86rem;
 }
 
 .slash-menu {

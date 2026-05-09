@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom'
 
 import { createBlock, createPage, deleteBlockApi, listBlocks, reorderBlocks, updateBlock } from '../api/pages'
 import { useDebouncedEffect } from '../hooks/useDebouncedEffect'
-import type { Block } from '../types'
+import type { Block, Page } from '../types'
 import { Button } from '../components/Button'
 import { SlashMenu } from './SlashMenu'
 
 type Props = {
   pageId: number
+  pages: Page[]
   onRefreshPages: () => Promise<void>
   onSavingState: (state: string) => void
 }
@@ -25,7 +26,11 @@ function emptyMetadataForType(type: string): Record<string, unknown> {
   return {}
 }
 
-export function BlockEditor({ pageId, onRefreshPages, onSavingState }: Props) {
+function stripSlashCommand(value: string): string {
+  return value.replace(/\\[^\\s]*$/, '').trim()
+}
+
+export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Props) {
   const navigate = useNavigate()
   const [blocks, setBlocks] = useState<Block[]>([])
   const [loading, setLoading] = useState(true)
@@ -35,6 +40,7 @@ export function BlockEditor({ pageId, onRefreshPages, onSavingState }: Props) {
   const inputRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
 
   const sortedBlocks = useMemo(() => [...blocks].sort((a, b) => a.sort_order - b.sort_order), [blocks])
+  const pageTitleMap = useMemo(() => new Map(pages.map((page) => [page.id, page.title])), [pages])
 
   const syncHeight = (element: HTMLTextAreaElement | null) => {
     if (!element) return
@@ -138,7 +144,8 @@ export function BlockEditor({ pageId, onRefreshPages, onSavingState }: Props) {
     if (!block) return
 
     if (type === 'page_link') {
-      const child = await createPage(block.content.trim() || 'Untitled page', pageId)
+      const nextTitle = stripSlashCommand(block.content) || 'Untitled page'
+      const child = await createPage(nextTitle, pageId)
       patchBlock(blockId, {
         type,
         content: child.title,
@@ -166,6 +173,7 @@ export function BlockEditor({ pageId, onRefreshPages, onSavingState }: Props) {
       {sortedBlocks.map((block, index) => {
         const toggleExpanded = Boolean(block.metadata.expanded)
         const linkedPageId = typeof block.metadata.linked_page_id === 'number' ? Number(block.metadata.linked_page_id) : null
+        const linkedPageTitle = linkedPageId ? pageTitleMap.get(linkedPageId) ?? block.content ?? 'Untitled page' : block.content ?? 'Untitled page'
         const lineNumber = block.type === 'numbered_list'
           ? 1 + sortedBlocks.slice(0, index).reduce((count, item) => (item.type === 'numbered_list' ? count + 1 : 0), 0)
           : null
@@ -197,7 +205,11 @@ export function BlockEditor({ pageId, onRefreshPages, onSavingState }: Props) {
             {block.type === 'divider' ? <hr className="divider" /> : null}
             {block.type === 'page_link' && linkedPageId ? (
               <button className="page-link" onClick={() => navigate(`/pages/${linkedPageId}`)}>
-                {block.content || 'Open nested page'}
+                <span className="page-link-icon">+</span>
+                <span className="page-link-copy">
+                  <strong>{linkedPageTitle || 'Untitled page'}</strong>
+                  <span>Open nested page</span>
+                </span>
               </button>
             ) : null}
             {block.type !== 'divider' && block.type !== 'page_link' ? (

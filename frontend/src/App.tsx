@@ -127,7 +127,7 @@ function App() {
           }
         >
           <Route index element={<WelcomePage />} />
-          <Route path="pages/:pageId" element={<PageView onRefreshPages={refreshPages} />} />
+          <Route path="pages/:pageId" element={<PageView pages={pages} onRefreshPages={refreshPages} />} />
           <Route path="files" element={<FilesPage maxUploadSizeMb={appInfo.max_upload_size_mb} />} />
           <Route
             path="settings"

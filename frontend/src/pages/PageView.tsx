@@ -4,13 +4,14 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { deletePage, favoritePage, getPage, unfavoritePage, updatePage } from '../api/pages'
 import { Button } from '../components/Button'
 import { BlockEditor } from '../editor/BlockEditor'
-import type { PageDetail } from '../types'
+import type { Page, PageDetail } from '../types'
 
 type Props = {
+  pages: Page[]
   onRefreshPages: () => Promise<void>
 }
 
-export function PageView({ onRefreshPages }: Props) {
+export function PageView({ pages, onRefreshPages }: Props) {
   const params = useParams()
   const navigate = useNavigate()
   const pageId = Number(params.pageId)
@@ -89,7 +90,7 @@ export function PageView({ onRefreshPages }: Props) {
           }}>Delete</Button>
         </div>
       </div>
-      <BlockEditor pageId={page.id} onRefreshPages={onRefreshPages} onSavingState={setStatus} />
+      <BlockEditor pageId={page.id} pages={pages} onRefreshPages={onRefreshPages} onSavingState={setStatus} />
     </div>
   )
 }
