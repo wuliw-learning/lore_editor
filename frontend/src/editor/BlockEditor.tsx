@@ -50,6 +50,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   const [focusBlockId, setFocusBlockId] = useState<number | null>(null)
   const [pageLinkDrafts, setPageLinkDrafts] = useState<Record<number, string>>({})
   const inputRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
+  const pageLinkTitleRefs = useRef<Record<number, HTMLInputElement | null>>({})
 
   const sortedBlocks = useMemo(() => [...blocks].sort((a, b) => a.sort_order - b.sort_order), [blocks])
   const pageTitleMap = useMemo(() => new Map(pages.map((page) => [page.id, page.title])), [pages])
@@ -69,6 +70,38 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     element.scrollIntoView({ block: 'nearest' })
   }
 
+  const focusPageLinkTitle = (element: HTMLInputElement | null, caretPosition: 'start' | 'end') => {
+    if (!element) return
+    element.focus({ preventScroll: true })
+    const offset = caretPosition === 'start' ? 0 : element.value.length
+    element.setSelectionRange(offset, offset)
+    element.scrollIntoView({ block: 'nearest' })
+  }
+
+  const findNavigableBlock = (startIndex: number, direction: -1 | 1) => {
+    for (let candidateIndex = startIndex + direction; candidateIndex >= 0 && candidateIndex < sortedBlocks.length; candidateIndex += direction) {
+      const candidate = sortedBlocks[candidateIndex]
+      if (candidate.type !== 'divider') {
+        return { candidate, candidateIndex }
+      }
+    }
+    return null
+  }
+
+  const focusAdjacentBlock = (currentIndex: number, direction: -1 | 1, caretPosition: 'start' | 'end') => {
+    const targetEntry = findNavigableBlock(currentIndex, direction)
+    if (!targetEntry) return false
+
+    const { candidate } = targetEntry
+    if (candidate.type === 'page_link') {
+      focusPageLinkTitle(pageLinkTitleRefs.current[candidate.id], caretPosition)
+      return true
+    }
+
+    focusTextarea(inputRefs.current[candidate.id], caretPosition)
+    return true
+  }
+
   useEffect(() => {
     setPageLinkDrafts((current) => {
       const next = { ...current }
@@ -82,8 +115,14 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   useEffect(() => {
     if (focusBlockId === null) return
     const target = inputRefs.current[focusBlockId]
-    if (!target) return
-    focusTextarea(target, 'end')
+    const pageLinkTarget = pageLinkTitleRefs.current[focusBlockId]
+    if (target) {
+      focusTextarea(target, 'end')
+    } else if (pageLinkTarget) {
+      focusPageLinkTitle(pageLinkTarget, 'end')
+    } else {
+      return
+    }
     setFocusBlockId(null)
   }, [focusBlockId, sortedBlocks])
 
@@ -273,11 +312,24 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                 <span className="page-link-icon">+</span>
                 <span className="page-link-copy">
                   <input
+                    ref={(element) => {
+                      pageLinkTitleRefs.current[block.id] = element
+                    }}
                     className="page-link-title"
                     value={linkedPageTitle || 'Untitled page'}
                     onChange={(event) => setPageLinkDrafts((current) => ({ ...current, [linkedPageId]: event.target.value }))}
                     onBlur={() => void saveLinkedPageTitle(block.id, linkedPageId, linkedPageTitle || 'Untitled page')}
                     onKeyDown={(event) => {
+                      if (event.altKey && event.key === 'ArrowUp') {
+                        event.preventDefault()
+                        focusAdjacentBlock(index, -1, 'end')
+                        return
+                      }
+                      if (event.altKey && event.key === 'ArrowDown') {
+                        event.preventDefault()
+                        focusAdjacentBlock(index, 1, 'start')
+                        return
+                      }
                       if (event.key === 'Enter') {
                         event.preventDefault()
                         event.currentTarget.blur()
@@ -338,6 +390,16 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                     if (event.key === 'Escape') {
                       setSlash(null)
                     }
+                    if (event.altKey && event.key === 'ArrowUp') {
+                      event.preventDefault()
+                      focusAdjacentBlock(index, -1, 'end')
+                      return
+                    }
+                    if (event.altKey && event.key === 'ArrowDown') {
+                      event.preventDefault()
+                      focusAdjacentBlock(index, 1, 'start')
+                      return
+                    }
                     if (event.key === 'Enter' && !event.shiftKey && slash?.blockId !== block.id) {
                       event.preventDefault()
                       if (isListLikeBlock(block.type) && !block.content.trim()) {
@@ -347,23 +409,13 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                       await appendBlock(block.sort_order, block.type === 'todo' ? 'todo' : block.type === 'numbered_list' ? 'numbered_list' : block.type === 'bulleted_list' ? 'bulleted_list' : 'text')
                     }
                     if (event.key === 'ArrowUp' && event.currentTarget.selectionStart === 0) {
-                      const previous = sortedBlocks[index - 1]
-                      if (previous && previous.type !== 'divider' && previous.type !== 'page_link') {
-                        const target = inputRefs.current[previous.id]
-                        if (target) {
-                          event.preventDefault()
-                          focusTextarea(target, 'end')
-                        }
+                      if (focusAdjacentBlock(index, -1, 'end')) {
+                        event.preventDefault()
                       }
                     }
                     if (event.key === 'ArrowDown' && event.currentTarget.selectionStart === event.currentTarget.value.length) {
-                      const next = sortedBlocks[index + 1]
-                      if (next && next.type !== 'divider' && next.type !== 'page_link') {
-                        const target = inputRefs.current[next.id]
-                        if (target) {
-                          event.preventDefault()
-                          focusTextarea(target, 'start')
-                        }
+                      if (focusAdjacentBlock(index, 1, 'start')) {
+                        event.preventDefault()
                       }
                     }
                     if (event.key === 'Backspace' && !block.content && sortedBlocks.length > 1) {
