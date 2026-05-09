@@ -34,6 +34,13 @@ function isListLikeBlock(type: string): boolean {
   return type === 'todo' || type === 'bulleted_list' || type === 'numbered_list'
 }
 
+function splitIntoParagraphBlocks(value: string): string[] {
+  return value
+    .split(/\r?\n\s*\r?\n+/)
+    .map((part) => part.replace(/\r?\n/g, ' ').trim())
+    .filter(Boolean)
+}
+
 export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Props) {
   const navigate = useNavigate()
   const [blocks, setBlocks] = useState<Block[]>([])
@@ -53,9 +60,14 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     element.style.height = `${Math.max(element.scrollHeight, 42)}px`
   }
 
-  useEffect(() => {
-    Object.values(inputRefs.current).forEach((element) => syncHeight(element))
-  }, [sortedBlocks])
+  const focusTextarea = (element: HTMLTextAreaElement | null, caretPosition: 'start' | 'end') => {
+    if (!element) return
+    element.focus({ preventScroll: true })
+    const offset = caretPosition === 'start' ? 0 : element.value.length
+    element.setSelectionRange(offset, offset)
+    syncHeight(element)
+    element.scrollIntoView({ block: 'nearest' })
+  }
 
   useEffect(() => {
     setPageLinkDrafts((current) => {
@@ -71,9 +83,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     if (focusBlockId === null) return
     const target = inputRefs.current[focusBlockId]
     if (!target) return
-    target.focus()
-    target.setSelectionRange(target.value.length, target.value.length)
-    syncHeight(target)
+    focusTextarea(target, 'end')
     setFocusBlockId(null)
   }, [focusBlockId, sortedBlocks])
 
@@ -143,6 +153,37 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
       pageId,
       nextBlocks.map((block) => ({ id: block.id, sort_order: block.sort_order })),
     )
+  }
+
+  const insertTextBlocksAfter = async (afterSortOrder: number, contents: string[]) => {
+    if (contents.length === 0) return [] as Block[]
+
+    const moved = sortedBlocks.map((block) =>
+      block.sort_order > afterSortOrder ? { ...block, sort_order: block.sort_order + contents.length } : block,
+    )
+    setBlocks(moved)
+
+    const createdBlocks: Block[] = []
+    for (const [offset, content] of contents.entries()) {
+      const created = await createBlock(pageId, {
+        type: 'text',
+        content,
+        metadata: {},
+        sort_order: afterSortOrder + offset + 1,
+      })
+      createdBlocks.push(created)
+    }
+
+    const nextBlocks = [...moved, ...createdBlocks].sort((a, b) => a.sort_order - b.sort_order)
+    setBlocks(nextBlocks)
+    setFocusBlockId(createdBlocks[createdBlocks.length - 1]?.id ?? null)
+
+    await reorderBlocks(
+      pageId,
+      nextBlocks.map((block) => ({ id: block.id, sort_order: block.sort_order })),
+    )
+
+    return createdBlocks
   }
 
   const removeBlock = async (blockId: number) => {
@@ -271,6 +312,28 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                       setSlash(null)
                     }
                   }}
+                  onPaste={async (event) => {
+                    if (block.type !== 'text') return
+
+                    const pastedText = event.clipboardData.getData('text/plain')
+                    const paragraphs = splitIntoParagraphBlocks(pastedText)
+                    if (paragraphs.length <= 1) return
+
+                    event.preventDefault()
+
+                    const textarea = event.currentTarget
+                    const selectionStart = textarea.selectionStart ?? block.content.length
+                    const selectionEnd = textarea.selectionEnd ?? block.content.length
+                    const before = block.content.slice(0, selectionStart)
+                    const after = block.content.slice(selectionEnd)
+
+                    const firstContent = `${before}${paragraphs[0]}`
+                    const middleContents = paragraphs.slice(1, -1)
+                    const lastContent = `${paragraphs[paragraphs.length - 1]}${after}`
+
+                    patchBlock(block.id, { content: firstContent })
+                    await insertTextBlocksAfter(block.sort_order, [...middleContents, lastContent])
+                  }}
                   onKeyDown={async (event) => {
                     if (event.key === 'Escape') {
                       setSlash(null)
@@ -289,8 +352,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                         const target = inputRefs.current[previous.id]
                         if (target) {
                           event.preventDefault()
-                          target.focus()
-                          target.setSelectionRange(target.value.length, target.value.length)
+                          focusTextarea(target, 'end')
                         }
                       }
                     }
@@ -300,8 +362,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                         const target = inputRefs.current[next.id]
                         if (target) {
                           event.preventDefault()
-                          target.focus()
-                          target.setSelectionRange(0, 0)
+                          focusTextarea(target, 'start')
                         }
                       }
                     }
