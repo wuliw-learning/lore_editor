@@ -325,6 +325,13 @@ input:focus {
   transition: background 0.16s ease;
 }
 
+.marker-column,
+.todo-checkbox,
+.quote-bar,
+.callout-icon {
+  flex: 0 0 1.6rem;
+}
+
 .editor-block:focus-within {
   background: rgba(112, 124, 145, 0.055);
 }
@@ -359,6 +366,7 @@ input:focus {
 .toggle-body {
   width: 100%;
   min-height: 2.7rem;
+  line-height: 1.65;
   resize: none;
   overflow: hidden;
   border-color: transparent;
@@ -402,6 +410,19 @@ input:focus {
   font-weight: 700;
 }
 
+.todo-checkbox {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.78rem 0 0;
+  accent-color: #5e7595;
+  border-radius: 4px;
+}
+
+.todo-complete {
+  color: #7d8898;
+  text-decoration: line-through;
+}
+
 .block-quote .block-input {
   border-left: 4px solid #c4cfdd;
   padding-left: 1rem;
@@ -412,16 +433,25 @@ input:focus {
   align-self: stretch;
   background: #c4cfdd;
   border-radius: 999px;
+  margin-top: 0.7rem;
 }
 
 .list-marker,
 .callout-icon,
 .toggle-button {
-  min-width: 1.5rem;
   color: #5f6d83;
   background: transparent;
   border: none;
-  margin-top: 0.85rem;
+  margin-top: 0.76rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.numbered-marker {
+  justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
 }
 
 .block-callout .block-input {

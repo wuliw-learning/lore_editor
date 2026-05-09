@@ -204,6 +204,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
             </button>
             {block.type === 'todo' ? (
               <input
+                className="todo-checkbox"
                 type="checkbox"
                 checked={Boolean(block.metadata.checked)}
                 onChange={(event) => patchBlock(block.id, { metadata: { ...block.metadata, checked: event.target.checked } })}
@@ -211,14 +212,14 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
             ) : null}
             {block.type === 'toggle' ? (
               <button
-                className="toggle-button"
+                className="toggle-button marker-column"
                 onClick={() => patchBlock(block.id, { metadata: { ...block.metadata, expanded: !toggleExpanded } })}
               >
                 {toggleExpanded ? 'v' : '>'}
               </button>
             ) : null}
-            {block.type === 'bulleted_list' ? <span className="list-marker">•</span> : null}
-            {lineNumber ? <span className="list-marker">{lineNumber}.</span> : null}
+            {block.type === 'bulleted_list' ? <span className="list-marker marker-column">•</span> : null}
+            {lineNumber ? <span className="list-marker marker-column numbered-marker">{lineNumber}.</span> : null}
             {block.type === 'quote' ? <span className="quote-bar" /> : null}
             {block.type === 'callout' ? <span className="callout-icon">{String(block.metadata.icon ?? 'i')}</span> : null}
             {block.type === 'divider' ? <hr className="divider" /> : null}
@@ -252,7 +253,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                     inputRefs.current[block.id] = element
                     syncHeight(element)
                   }}
-                  className={`block-input input-${block.type}`}
+                  className={`block-input input-${block.type}${block.type === 'todo' && Boolean(block.metadata.checked) ? ' todo-complete' : ''}`}
                   value={block.content}
                   placeholder={index === 0 ? 'Start typing or enter \\ to choose a block' : ''}
                   onChange={(event) => {
