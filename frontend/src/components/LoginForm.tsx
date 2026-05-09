@@ -30,26 +30,28 @@ export function LoginForm({ onSuccess }: Props) {
   return (
     <div className="login-shell">
       <form className="login-card" onSubmit={handleSubmit}>
-        <div>
+        <div className="login-header">
           <div className="eyebrow">Self-hosted notebook</div>
           <h1>Lore</h1>
           <p className="muted">Sign in to access pages, files, and settings.</p>
         </div>
-        <label>
-          Username
-          <input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="current-password"
-          />
-        </label>
+        <div className="login-fields">
+          <label className="field-group">
+            <span className="field-label">Username</span>
+            <input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" />
+          </label>
+          <label className="field-group">
+            <span className="field-label">Password</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+            />
+          </label>
+        </div>
         {error ? <div className="error-box">{error}</div> : null}
-        <Button type="submit" variant="primary" disabled={loading}>
+        <Button type="submit" variant="primary" className="login-submit" disabled={loading}>
           {loading ? 'Signing in...' : 'Sign in'}
         </Button>
       </form>
