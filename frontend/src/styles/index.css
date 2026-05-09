@@ -295,6 +295,12 @@ input:focus {
   align-items: flex-start;
   gap: 0.7rem;
   padding-left: 2rem;
+  border-radius: 14px;
+  transition: background 0.16s ease;
+}
+
+.editor-block:focus-within {
+  background: rgba(112, 124, 145, 0.055);
 }
 
 .block-handle {
@@ -338,13 +344,21 @@ input:focus {
 
 .block-input:hover,
 .toggle-body:hover {
-  border-color: #e8edf5;
-  background: rgba(255, 255, 255, 0.72);
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .block-input:focus,
 .toggle-body:focus {
-  background: #fff;
+  outline: none;
+  border-color: transparent;
+  box-shadow: none;
+  background: transparent;
+}
+
+.block-input::placeholder,
+.toggle-body::placeholder {
+  color: #98a4b6;
 }
 
 .input-heading_1 {
@@ -407,12 +421,19 @@ input:focus {
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  border: 1px solid #dfe6f2;
-  background: linear-gradient(180deg, #f7faff 0%, #eef4ff 100%);
+  border: 1px solid rgba(210, 220, 235, 0.72);
+  background: rgba(244, 247, 252, 0.82);
   color: #24448f;
   border-radius: 16px;
   padding: 0.9rem 1rem;
   text-align: left;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.page-link:hover,
+.editor-block:focus-within .page-link {
+  background: rgba(239, 244, 251, 0.96);
+  border-color: rgba(196, 208, 226, 0.92);
 }
 
 .page-link-icon {
@@ -422,8 +443,8 @@ input:focus {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: rgba(43, 92, 255, 0.12);
-  color: #2b5cff;
+  background: rgba(76, 102, 148, 0.1);
+  color: #476185;
   font-weight: 700;
 }
 
@@ -444,19 +465,20 @@ input:focus {
   padding: 0;
   font-size: 0.98rem;
   font-weight: 700;
-  color: #24448f;
+  color: #29466f;
 }
 
 .page-link-title:focus {
   outline: none;
   border: none;
   box-shadow: none;
+  background: transparent;
 }
 
 .page-link-open {
   border: none;
-  background: rgba(43, 92, 255, 0.1);
-  color: #24448f;
+  background: rgba(76, 102, 148, 0.1);
+  color: #35557f;
   border-radius: 12px;
   padding: 0.6rem 0.85rem;
   cursor: pointer;
