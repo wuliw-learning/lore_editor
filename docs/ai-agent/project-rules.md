@@ -36,6 +36,8 @@ This document is the primary rule set for AI agents working on Lore. It consolid
 4. Empty structured blocks must show placeholders.
 5. Slash menu insertion must not create an accidental extra block from the same Enter press.
 6. Insertion order and focus retention are high-risk areas and must be tested carefully.
+7. Drag-and-drop reorder must preserve visible insertion feedback and persist through the reorder API.
+8. Inline image blocks must stay embedded in the editor flow instead of redirecting users to a separate files-only experience.
 
 ## Keyboard Interaction Rules
 
@@ -104,7 +106,8 @@ This document is the primary rule set for AI agents working on Lore. It consolid
 3. Check `docs/ai-agent/change-log.md` for prior product decisions.
 4. Make focused changes in small batches.
 5. Commit by module or behavior, not as one large mixed change.
-6. After finishing a behavior change, review whether user docs and AI docs need to be updated.
+6. Prefer small commits that each cover one concrete task or behavior fix.
+7. After finishing a behavior change, review whether user docs and AI docs need to be updated.
 
 ## File Map For Common Work
 
