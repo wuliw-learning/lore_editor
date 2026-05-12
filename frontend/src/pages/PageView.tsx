@@ -130,6 +130,35 @@ export function PageView({ pages, onRefreshPages }: Props) {
 
   return (
     <div className="page-view">
+      <div className="page-floating-actions">
+        <div className="page-header-actions">
+          <button className={`page-save-indicator${status === 'Saving...' ? ' is-saving' : ''}${status === 'Saved' ? ' is-saved' : ''}${status === 'Save failed' ? ' is-failed' : ''}`} aria-label={saveLabel} title={saveLabel}>
+            <SaveIcon state={saveLabel} />
+          </button>
+          <button className={`page-icon-action${page.is_favorite ? ' is-active' : ''}`} aria-label={page.is_favorite ? 'Unfavorite page' : 'Favorite page'} title={page.is_favorite ? 'Unfavorite page' : 'Favorite page'} onClick={async () => {
+            if (page.is_favorite) {
+              await unfavoritePage(page.id)
+            } else {
+              await favoritePage(page.id)
+            }
+            await refresh()
+            await onRefreshPages()
+          }}>
+            <FavoriteIcon filled={page.is_favorite} />
+          </button>
+          <button className="page-icon-action page-icon-action-danger" aria-label="Delete page" title="Delete page" onClick={async () => {
+            try {
+              await deletePage(page.id)
+              await onRefreshPages()
+              navigate('/')
+            } catch (err) {
+              setError(err instanceof Error ? err.message : 'Delete failed')
+            }
+          }}>
+            <DeleteIcon />
+          </button>
+        </div>
+      </div>
       <div className="breadcrumbs">
         {page.breadcrumbs.map((item, index) => (
           <span key={item.id}>
@@ -142,35 +171,6 @@ export function PageView({ pages, onRefreshPages }: Props) {
         <div className="page-heading-block">
           <div className="page-kicker muted small">Document</div>
           <input className={`page-title-input ${titleLengthClass}`.trim()} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Untitled" />
-        </div>
-        <div className="page-toolbar-actions">
-          <div className="page-header-actions">
-            <button className={`page-save-indicator${status === 'Saving...' ? ' is-saving' : ''}${status === 'Saved' ? ' is-saved' : ''}${status === 'Save failed' ? ' is-failed' : ''}`} aria-label={saveLabel} title={saveLabel}>
-              <SaveIcon state={saveLabel} />
-            </button>
-            <button className={`page-icon-action${page.is_favorite ? ' is-active' : ''}`} aria-label={page.is_favorite ? 'Unfavorite page' : 'Favorite page'} title={page.is_favorite ? 'Unfavorite page' : 'Favorite page'} onClick={async () => {
-              if (page.is_favorite) {
-                await unfavoritePage(page.id)
-              } else {
-                await favoritePage(page.id)
-              }
-              await refresh()
-              await onRefreshPages()
-            }}>
-              <FavoriteIcon filled={page.is_favorite} />
-            </button>
-            <button className="page-icon-action page-icon-action-danger" aria-label="Delete page" title="Delete page" onClick={async () => {
-              try {
-                await deletePage(page.id)
-                await onRefreshPages()
-                navigate('/')
-              } catch (err) {
-                setError(err instanceof Error ? err.message : 'Delete failed')
-              }
-            }}>
-              <DeleteIcon />
-            </button>
-          </div>
         </div>
       </div>
       <BlockEditor pageId={page.id} pages={pages} onRefreshPages={onRefreshPages} onSavingState={setStatus} />
