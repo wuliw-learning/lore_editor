@@ -686,7 +686,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
               ) : null}
               {block.type === 'image' ? (
                 <div className="block-input-wrap image-block-wrap">
-                  <div className="image-block-card">
+                  <div className={`image-block-card${imageFileId ? ' has-image' : ''}`}>
                     {imageFileId ? (
                       <img className="inline-image" src={getFileContentUrl(imageFileId)} alt={block.content || 'Inline image'} />
                     ) : (

@@ -1041,6 +1041,22 @@ input:focus {
   flex-wrap: wrap;
 }
 
+.image-block-card.has-image .image-block-actions {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  margin-top: 0;
+  transition: opacity 0.16s ease, max-height 0.16s ease, margin-top 0.16s ease;
+}
+
+.editor-block:focus-within .image-block-card.has-image .image-block-actions {
+  opacity: 1;
+  max-height: 4rem;
+  pointer-events: auto;
+  margin-top: 0.1rem;
+}
+
 .image-action-button {
   min-height: 2.5rem;
 }
