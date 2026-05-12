@@ -28,26 +28,25 @@ The login form is the only unauthenticated screen. After success, the app reload
 The left sidebar includes:
 
 - Lore branding
-- theme switcher on desktop
+- compact links for `Search`, `Files`, and `Settings`
 - page creation action inside the `Pages` section
 - favorites list
 - root pages list
-- links to search, files, settings
-- logout and hotkeys help actions
+- account block with logout
 
 Desktop behavior:
 
 - the sidebar stays sticky while the page editor scrolls
 - the page list scrolls inside the sidebar panel
 - account actions remain pinned to the bottom
-- theme switching stays available in the shell without opening Settings
+- search, files, and settings are presented as compact icon-text navigation rows instead of large utility buttons
 
 ### Themes
 
 - Lore supports both dark and light themes.
 - The frontend stores the selected theme in local storage under `lore-theme`.
 - First load defaults to dark mode unless the user explicitly switches to light mode.
-- The current theme can be changed from the shell toggle or the `Settings` page.
+- The current theme can be changed from the `Settings` page.
 
 ### Page View
 
@@ -55,11 +54,12 @@ The page screen includes:
 
 - breadcrumbs for nested pages
 - title editing with debounce save
+- save-state indicator
 - favorite toggle
 - delete action
 - block editor
 
-The page toolbar groups `Saved`, `Favorite`, and `Delete` into a quieter document header aligned with the title and breadcrumbs.
+The document header is intentionally light: the title no longer sits inside a framed card, long titles scale down by length, and save/favorite/delete live as quiet icons in the upper-right area.
 
 ## Block Editor
 
@@ -98,7 +98,7 @@ It also supports desktop drag-and-drop reordering through a dedicated drag handl
 
 - Block changes are stored locally in state first.
 - A debounce hook batches save requests.
-- The page header shows `Saving...`, `Saved`, or `Save failed`.
+- The page header exposes save state through a compact icon that reflects `Saving...`, `Saved`, or `Save failed`.
 
 ### Keyboard Navigation
 
@@ -128,10 +128,13 @@ It also supports desktop drag-and-drop reordering through a dedicated drag handl
 - `image` blocks render directly in the editor flow.
 - The image picker supports both direct upload and selecting from the existing Files library.
 - Image blocks keep a caption textarea so the block still participates in normal block navigation and autosave.
+- When an image is already selected, its upload/source buttons stay hidden until the image block is focused.
 
 ## Search
 
-- Search opens in a modal.
+- Search is built into the top bar as a wide inline field.
+- `Ctrl + K` and the sidebar `Search` item focus the same top search field.
+- Results appear in a dropdown directly below the field instead of opening a separate modal.
 - Results show the page title and either a title match or block snippet.
 - Clicking a result opens the page.
 

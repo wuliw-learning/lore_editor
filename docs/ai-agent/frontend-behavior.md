@@ -5,14 +5,24 @@
 - Desktop sidebar is sticky and remains visible while the editor scrolls.
 - The `Pages` section contains the page creation action (`+ New`).
 - Sidebar footer stays pinned to the bottom.
-- Theme switching is available from the shell and from Settings.
+- Sidebar account controls now live inside the account block, including logout.
+- `Search`, `Files`, and `Settings` render as compact icon-text navigation rows.
 - Mobile uses a slide-in drawer instead of sticky desktop positioning.
 
 ## Themes
 
 - The frontend supports `dark` and `light` themes.
 - Theme state is stored in local storage with dark mode as the default starting theme.
+- Theme switching is available from `Settings`.
 - Global surfaces, cards, modals, and editor-adjacent UI should consume shared theme tokens from `frontend/src/styles/index.css` instead of hardcoded light-only colors.
+
+## Search
+
+- The main search field is embedded in the top bar instead of opening a dedicated modal shell.
+- Search results appear in a dropdown directly below the top-bar field.
+- `Ctrl + K` and the sidebar `Search` action should focus that same top-bar field.
+- Clicking outside the search area or pressing `Esc` closes the dropdown.
+- Keyboard result navigation remains `ArrowUp`, `ArrowDown`, and `Enter`.
 
 ## Editor Basics
 
@@ -70,9 +80,12 @@
 - The editor supports an `image` block rendered inline in the document flow.
 - Images can be uploaded directly from the editor or selected from the existing Files library.
 - Image blocks keep a caption field in the normal block flow so block navigation remains consistent.
+- Filled image blocks keep their upload/source buttons hidden until the image block is focused.
 
 ## Important UX Decisions
 
 - Focus styling in the editor is intentionally soft and page-like.
 - The editor has extra bottom spacing so the last block is not cramped against the viewport edge.
 - Toolbar actions are intentionally quieter than the document content.
+- Page-header actions are icon-first controls aligned to the upper-right area.
+- Long page titles scale down by length so large headings stay readable without dominating the layout.

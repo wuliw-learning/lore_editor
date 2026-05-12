@@ -27,8 +27,7 @@ Use the values from:
 
 ## Change Theme
 
-- Use the theme toggle in the app shell.
-- Or open `Settings` and switch between dark and light mode there.
+- Open `Settings` and switch between dark and light mode there.
 - Lore starts in dark mode until you explicitly switch to light mode.
 
 ## Create a Root Page
@@ -66,6 +65,7 @@ Slash-selected blocks replace the current insertion point directly, so you can i
 1. Open the block picker with `\` and choose `Image`.
 2. Upload an image directly, or pick one from the existing `Files` library.
 3. The image appears inline in the page and can keep an optional caption below it.
+4. After an image is placed, the image action buttons appear when the image block is selected.
 
 ## Lists
 
@@ -78,14 +78,16 @@ Slash-selected blocks replace the current insertion point directly, so you can i
 
 ## Search
 
-- Press `Ctrl + K`.
+- Use the wide search bar at the top of the workspace.
+- Or press `Ctrl + K` to focus that same search bar.
 - Enter an exact query.
+- Results appear directly below the search field.
 - Click a result to jump to its page.
 
 ## Favorites
 
 - Open a page.
-- Click `Favorite` in the page toolbar.
+- Click the star icon in the page header.
 - Favorited pages appear in the sidebar section.
 
 ## Files

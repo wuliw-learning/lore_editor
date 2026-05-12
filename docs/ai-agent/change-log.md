@@ -28,6 +28,11 @@
 24. The frontend visual system was rebuilt around shared theme tokens and a calmer editorial layout.
 25. Dark and light themes were added, with dark mode as the default starting theme and shell-level theme switching.
 26. Nested page cards were restyled to feel like document references that match the rest of the workspace.
+27. Shell search moved from a centered modal workflow to a wide inline top-bar field with results rendered directly below it.
+28. The sidebar was simplified into compact icon-based navigation rows with logout grouped inside the account block.
+29. Page header actions were converted into quiet upper-right icons for save state, favorite, and delete.
+30. Long page titles now scale down by length instead of relying only on viewport width.
+31. Filled image blocks hide upload and source buttons until the image block is focused.
 
 ## Guidance For Future Agents
 
