@@ -46,6 +46,7 @@ function App() {
     max_upload_size_mb: 20,
   })
   const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [hotkeysOpen, setHotkeysOpen] = useState(false)
   const [appStatus, setAppStatus] = useState('')
   const [theme, setTheme] = useState<ThemeMode>(readInitialTheme)
@@ -145,6 +146,8 @@ function App() {
               appStatus={appStatus}
               onCreatePage={() => void handleCreatePage()}
               onOpenSearch={() => setSearchOpen(true)}
+              searchQuery={searchQuery}
+              onSearchQueryChange={setSearchQuery}
               onLogout={() => void handleLogout()}
             />
           }
@@ -161,6 +164,8 @@ function App() {
       </Routes>
       {searchOpen ? (
         <SearchModal
+          query={searchQuery}
+          onQueryChange={setSearchQuery}
           onClose={() => setSearchOpen(false)}
           onSelect={(pageId) => {
             setSearchOpen(false)

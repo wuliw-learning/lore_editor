@@ -5,12 +5,13 @@ import type { SearchResult } from '../types'
 import { Modal } from './Modal'
 
 type Props = {
+  query: string
+  onQueryChange: (value: string) => void
   onClose: () => void
   onSelect: (pageId: number) => void
 }
 
-export function SearchModal({ onClose, onSelect }: Props) {
-  const [query, setQuery] = useState('')
+export function SearchModal({ query, onQueryChange, onClose, onSelect }: Props) {
   const [results, setResults] = useState<SearchResult[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -67,7 +68,7 @@ export function SearchModal({ onClose, onSelect }: Props) {
           autoFocus
           placeholder="Search pages and blocks"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => onQueryChange(event.target.value)}
         />
         <div className="search-summary muted small">{loading ? 'Searching...' : summary}</div>
         <div className="search-results">
