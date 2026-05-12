@@ -441,8 +441,13 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     index: number,
     enableSlashMenu: boolean,
   ) => {
-    const isSlashOpenForBlock = enableSlashMenu && slash?.blockId === block.id
-    const currentSlash = isSlashOpenForBlock ? slash : null
+    const slashQueryFromValue = enableSlashMenu ? getSlashQuery(event.currentTarget.value) : null
+    const isSlashOpenForBlock = Boolean(slashQueryFromValue) || (enableSlashMenu && slash?.blockId === block.id)
+    const currentSlash = isSlashOpenForBlock
+      ? slash?.blockId === block.id
+        ? slash
+        : { blockId: block.id, query: slashQueryFromValue ?? '', activeIndex: 0 }
+      : null
     const slashItems = currentSlash ? getMatchingBlockOptions(currentSlash.query) : []
 
     if (event.key === 'Escape') {
@@ -454,6 +459,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     }
     if (isSlashOpenForBlock && event.key === 'ArrowUp') {
       event.preventDefault()
+      event.stopPropagation()
       setSlash((current) => {
         if (!current || current.blockId !== block.id) return current
         return { ...current, activeIndex: (current.activeIndex - 1 + Math.max(slashItems.length, 1)) % Math.max(slashItems.length, 1) }
@@ -462,6 +468,11 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     }
     if (isSlashOpenForBlock && event.key === 'ArrowDown') {
       event.preventDefault()
+      event.stopPropagation()
+      if (!slash || slash.blockId !== block.id) {
+        setSlash({ blockId: block.id, query: slashQueryFromValue ?? '', activeIndex: 0 })
+        return
+      }
       setSlash((current) => {
         if (!current || current.blockId !== block.id) return current
         return { ...current, activeIndex: (current.activeIndex + 1) % Math.max(slashItems.length, 1) }
@@ -482,6 +493,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     if (event.key === 'Enter' && !event.shiftKey) {
       if (isSlashOpenForBlock) {
         event.preventDefault()
+        event.stopPropagation()
         const selectedType = slashItems[currentSlash?.activeIndex ?? 0]?.type ?? slashItems[0]?.type ?? null
         if (selectedType) {
           await selectSlashType(block.id, selectedType, event.currentTarget.value)
