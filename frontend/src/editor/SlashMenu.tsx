@@ -1,51 +1,32 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import { getMatchingBlockOptions } from './blockTypes'
 
 type Props = {
   query: string
   onSelect: (type: string) => void
-  onClose: () => void
-  onActiveTypeChange: (type: string | null) => void
+  activeIndex: number
+  onActiveIndexChange: (index: number) => void
 }
 
-export function SlashMenu({ query, onSelect, onClose, onActiveTypeChange }: Props) {
+export function SlashMenu({ query, onSelect, activeIndex, onActiveIndexChange }: Props) {
   const items = useMemo(() => getMatchingBlockOptions(query), [query])
-  const [index, setIndex] = useState(0)
   const itemRefs = useRef<Record<number, HTMLButtonElement | null>>({})
 
   useEffect(() => {
-    setIndex(0)
-  }, [query])
-
-  useEffect(() => {
-    const activeItem = itemRefs.current[index]
-    activeItem?.scrollIntoView({ block: 'nearest' })
-  }, [index])
-
-  useEffect(() => {
-    onActiveTypeChange(items[index]?.type ?? null)
-  }, [index, items, onActiveTypeChange])
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        onClose()
-      }
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        setIndex((current) => (current + 1) % Math.max(items.length, 1))
-      }
-      if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        setIndex((current) => (current - 1 + Math.max(items.length, 1)) % Math.max(items.length, 1))
-      }
+    if (items.length === 0 && activeIndex !== 0) {
+      onActiveIndexChange(0)
+      return
     }
+    if (activeIndex > Math.max(items.length - 1, 0)) {
+      onActiveIndexChange(0)
+    }
+  }, [activeIndex, items.length, onActiveIndexChange, query])
 
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [items.length, onClose])
+  useEffect(() => {
+    const activeItem = itemRefs.current[activeIndex]
+    activeItem?.scrollIntoView({ block: 'nearest' })
+  }, [activeIndex])
 
   return (
     <div className="slash-menu">
@@ -56,8 +37,8 @@ export function SlashMenu({ query, onSelect, onClose, onActiveTypeChange }: Prop
           ref={(element) => {
             itemRefs.current[itemIndex] = element
           }}
-          className={`slash-item ${itemIndex === index ? 'active' : ''}`}
-          onMouseEnter={() => setIndex(itemIndex)}
+          className={`slash-item ${itemIndex === activeIndex ? 'active' : ''}`}
+          onMouseEnter={() => onActiveIndexChange(itemIndex)}
           onMouseDown={(event) => {
             event.preventDefault()
             onSelect(item.type)

@@ -31,6 +31,7 @@ type Props = {
 type SlashState = {
   blockId: number
   query: string
+  activeIndex: number
 } | null
 
 type DropIndicator = {
@@ -100,7 +101,6 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [slash, setSlash] = useState<SlashState>(null)
-  const [slashActiveType, setSlashActiveType] = useState<string | null>(null)
   const [focusBlockId, setFocusBlockId] = useState<number | null>(null)
   const [skipNextEnterBlockId, setSkipNextEnterBlockId] = useState<number | null>(null)
   const [pageLinkDrafts, setPageLinkDrafts] = useState<Record<number, string>>({})
@@ -380,7 +380,6 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
       setSkipNextEnterBlockId(blockId)
       setFocusBlockId(blockId)
       setSlash(null)
-      setSlashActiveType(null)
       return
     }
 
@@ -391,7 +390,6 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
         metadata: emptyMetadataForType(type),
       })
       setSlash(null)
-      setSlashActiveType(null)
       await openImagePicker(blockId)
       return
     }
@@ -404,7 +402,6 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     setSkipNextEnterBlockId(blockId)
     setFocusBlockId(blockId)
     setSlash(null)
-    setSlashActiveType(null)
   }
 
   const getDropTarget = (event: DragEvent<HTMLDivElement>, blockId: number) => {
@@ -444,9 +441,32 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     index: number,
     enableSlashMenu: boolean,
   ) => {
+    const isSlashOpenForBlock = enableSlashMenu && slash?.blockId === block.id
+    const currentSlash = isSlashOpenForBlock ? slash : null
+    const slashItems = currentSlash ? getMatchingBlockOptions(currentSlash.query) : []
+
     if (event.key === 'Escape') {
-      setSlash(null)
-      setSlashActiveType(null)
+      if (isSlashOpenForBlock) {
+        event.preventDefault()
+        setSlash(null)
+        return
+      }
+    }
+    if (isSlashOpenForBlock && event.key === 'ArrowUp') {
+      event.preventDefault()
+      setSlash((current) => {
+        if (!current || current.blockId !== block.id) return current
+        return { ...current, activeIndex: (current.activeIndex - 1 + Math.max(slashItems.length, 1)) % Math.max(slashItems.length, 1) }
+      })
+      return
+    }
+    if (isSlashOpenForBlock && event.key === 'ArrowDown') {
+      event.preventDefault()
+      setSlash((current) => {
+        if (!current || current.blockId !== block.id) return current
+        return { ...current, activeIndex: (current.activeIndex + 1) % Math.max(slashItems.length, 1) }
+      })
+      return
     }
     if (event.altKey && event.key === 'ArrowUp') {
       event.preventDefault()
@@ -460,12 +480,9 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     }
 
     if (event.key === 'Enter' && !event.shiftKey) {
-      const slashQuery = enableSlashMenu ? getSlashQuery(event.currentTarget.value) : null
-      if (slashQuery !== null) {
+      if (isSlashOpenForBlock) {
         event.preventDefault()
-        const selectedType = slash?.blockId === block.id
-          ? slashActiveType ?? getMatchingBlockOptions(slashQuery)[0]?.type ?? null
-          : getMatchingBlockOptions(slashQuery)[0]?.type ?? null
+        const selectedType = slashItems[currentSlash?.activeIndex ?? 0]?.type ?? slashItems[0]?.type ?? null
         if (selectedType) {
           await selectSlashType(block.id, selectedType, event.currentTarget.value)
         }
@@ -719,11 +736,14 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                       syncHeight(event.target)
                       const slashQuery = getSlashQuery(value)
                       if (slashQuery !== null) {
-                        setSlash({ blockId: block.id, query: slashQuery })
-                        setSlashActiveType(getMatchingBlockOptions(slashQuery)[0]?.type ?? null)
+                        setSlash((current) => {
+                          if (current?.blockId === block.id) {
+                            return { blockId: block.id, query: slashQuery, activeIndex: 0 }
+                          }
+                          return { blockId: block.id, query: slashQuery, activeIndex: 0 }
+                        })
                       } else if (slash?.blockId === block.id) {
                         setSlash(null)
-                        setSlashActiveType(null)
                       }
                     }}
                     onPaste={async (event) => {
@@ -767,11 +787,8 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                 <SlashMenu
                   query={slash.query}
                   onSelect={(type) => void selectSlashType(block.id, type)}
-                  onClose={() => {
-                    setSlash(null)
-                    setSlashActiveType(null)
-                  }}
-                  onActiveTypeChange={setSlashActiveType}
+                  activeIndex={slash.activeIndex}
+                  onActiveIndexChange={(activeIndex) => setSlash((current) => (current && current.blockId === block.id ? { ...current, activeIndex } : current))}
                 />
               ) : null}
               {showDropAfter ? <div className="block-drop-indicator block-drop-indicator-bottom" /> : null}
