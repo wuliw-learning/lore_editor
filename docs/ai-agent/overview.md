@@ -45,3 +45,7 @@ Lore is a self-hosted, single-user notebook with:
 - deletion rule that blocks deleting pages with child pages
 - cleanup of nested page link references when a linked page is deleted
 - keyboard interaction patterns already documented in this folder
+
+## Primary Rule Set
+
+- Start with `docs/ai-agent/project-rules.md` before making product-facing changes.
