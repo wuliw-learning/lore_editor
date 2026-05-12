@@ -108,6 +108,7 @@ This document is the primary rule set for AI agents working on Lore. It consolid
 5. Commit by module or behavior, not as one large mixed change.
 6. Prefer small commits that each cover one concrete task or behavior fix.
 7. After finishing a behavior change, review whether user docs and AI docs need to be updated.
+8. Run verification steps inside Docker whenever the project provides a Docker workflow for the affected codepaths.
 
 ## File Map For Common Work
 
