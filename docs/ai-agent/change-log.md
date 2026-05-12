@@ -25,6 +25,9 @@
 21. Desktop block drag and drop was added on top of the existing reorder API.
 22. Inline image blocks were added with direct upload and Files-library selection.
 23. Slash-menu keyboard handling now stays local to the open menu instead of leaking into block navigation.
+24. The frontend visual system was rebuilt around shared theme tokens and a calmer editorial layout.
+25. Dark and light themes were added, with dark mode as the default starting theme and shell-level theme switching.
+26. Nested page cards were restyled to feel like document references that match the rest of the workspace.
 
 ## Guidance For Future Agents
 

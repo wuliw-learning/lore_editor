@@ -5,7 +5,14 @@
 - Desktop sidebar is sticky and remains visible while the editor scrolls.
 - The `Pages` section contains the page creation action (`+ New`).
 - Sidebar footer stays pinned to the bottom.
+- Theme switching is available from the shell and from Settings.
 - Mobile uses a slide-in drawer instead of sticky desktop positioning.
+
+## Themes
+
+- The frontend supports `dark` and `light` themes.
+- Theme state is stored in local storage with dark mode as the default starting theme.
+- Global surfaces, cards, modals, and editor-adjacent UI should consume shared theme tokens from `frontend/src/styles/index.css` instead of hardcoded light-only colors.
 
 ## Editor Basics
 
@@ -50,6 +57,7 @@
 - Nested page cards are fully clickable except for the title input.
 - The title is editable inline.
 - The displayed title is resolved from the current page list, not trusted blindly from the block payload.
+- Cards should read as linked document references inside the editor, not like primary call-to-action buttons.
 - Deleted linked pages render as broken cards and can be converted back to text.
 
 ## Paste And Long Blocks

@@ -28,6 +28,7 @@ The login form is the only unauthenticated screen. After success, the app reload
 The left sidebar includes:
 
 - Lore branding
+- theme switcher on desktop
 - page creation action inside the `Pages` section
 - favorites list
 - root pages list
@@ -39,6 +40,14 @@ Desktop behavior:
 - the sidebar stays sticky while the page editor scrolls
 - the page list scrolls inside the sidebar panel
 - account actions remain pinned to the bottom
+- theme switching stays available in the shell without opening Settings
+
+### Themes
+
+- Lore supports both dark and light themes.
+- The frontend stores the selected theme in local storage under `lore-theme`.
+- First load defaults to dark mode unless the user explicitly switches to light mode.
+- The current theme can be changed from the shell toggle or the `Settings` page.
 
 ### Page View
 
@@ -50,7 +59,7 @@ The page screen includes:
 - delete action
 - block editor
 
-The page toolbar groups `Saved`, `Favorite`, and `Delete` into a quieter action area aligned with the page title.
+The page toolbar groups `Saved`, `Favorite`, and `Delete` into a quieter document header aligned with the title and breadcrumbs.
 
 ## Block Editor
 
@@ -111,6 +120,7 @@ It also supports desktop drag-and-drop reordering through a dedicated drag handl
 
 - Nested pages render as page-like cards with an inline editable title.
 - The full card is clickable except for the title input, which is reserved for rename.
+- Cards use the same editorial surface language as the rest of the workspace instead of bright button styling.
 - Deleted nested page references render as broken cards with a `Convert` action instead of navigating to a dead route.
 
 ### Inline Images

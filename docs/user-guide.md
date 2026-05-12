@@ -25,6 +25,12 @@ Use the values from:
 - `LORE_USERNAME`
 - `LORE_PASSWORD`
 
+## Change Theme
+
+- Use the theme toggle in the app shell.
+- Or open `Settings` and switch between dark and light mode there.
+- Lore starts in dark mode until you explicitly switch to light mode.
+
 ## Create a Root Page
 
 - In the sidebar, open the `Pages` section and click `+ New`.
