@@ -7,18 +7,27 @@ type Props = {
   pages: Page[]
   user: User
   appStatus: string
+  theme: 'light' | 'dark'
   onCreatePage: () => void
   onOpenSearch: () => void
   onOpenHotkeys: () => void
+  onToggleTheme: () => void
   onLogout: () => void
 }
 
-export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, onOpenHotkeys, onLogout }: Props) {
+export function AppShell({ pages, user, appStatus, theme, onCreatePage, onOpenSearch, onOpenHotkeys, onToggleTheme, onLogout }: Props) {
   const location = useLocation()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const favorites = pages.filter((page) => page.is_favorite)
   const roots = pages.filter((page) => page.parent_id === null)
+  const currentSectionLabel = location.pathname.startsWith('/files')
+    ? 'Files'
+    : location.pathname.startsWith('/settings')
+      ? 'Settings'
+      : location.pathname.startsWith('/pages/')
+        ? 'Workspace'
+        : 'Home'
 
   useEffect(() => {
     setSidebarOpen(false)
@@ -28,10 +37,14 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
     <div className="app-layout">
       <aside className={`sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="sidebar-header">
-          <div>
+          <div className="sidebar-brand-block">
             <div className="eyebrow">Personal wiki</div>
             <h1>Lore</h1>
+            <p className="muted sidebar-brand-copy">A calm workspace for pages, references, and files.</p>
           </div>
+          <button className="theme-toggle theme-toggle-sidebar" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          </button>
         </div>
         <div className="sidebar-actions">
           <Button className="sidebar-nav-button" onClick={onOpenSearch}>Search</Button>
@@ -64,7 +77,10 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
           </div>
         </nav>
         <div className="sidebar-footer">
-          <div className="muted small">Signed in as {user.username}</div>
+          <div className="sidebar-account-card">
+            <div className="muted small">Signed in as</div>
+            <strong>{user.username}</strong>
+          </div>
           <div className="footer-actions">
             <Button className="sidebar-footer-button" onClick={onOpenHotkeys}>Hotkeys</Button>
             <Button className="sidebar-footer-button" variant="danger" onClick={onLogout}>
@@ -80,13 +96,19 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, o
             <Button className="menu-toggle" onClick={() => setSidebarOpen((current) => !current)}>
               Menu
             </Button>
-            <button className="lore-mark" onClick={() => navigate('/')}>
-              Lore
-            </button>
+            <div className="content-heading">
+              <button className="lore-mark" onClick={() => navigate('/')}>
+                Lore
+              </button>
+              <span className="content-section-label">{currentSectionLabel}</span>
+            </div>
           </div>
           <div className="content-topbar-right">
             <button className={`status-chip${appStatus ? ' visible' : ''}`} aria-live="polite">
               {appStatus || 'Autosave on'}
+            </button>
+            <button className="theme-toggle theme-toggle-topbar" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
+              {theme === 'dark' ? 'Light' : 'Dark'}
             </button>
             <Button className="search-compact" onClick={onOpenSearch}>
               Search

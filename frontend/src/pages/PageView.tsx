@@ -81,7 +81,10 @@ export function PageView({ pages, onRefreshPages }: Props) {
         ))}
       </div>
       <div className="page-toolbar">
-        <input className="page-title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Untitled" />
+        <div className="page-heading-block">
+          <div className="page-kicker muted small">Document</div>
+          <input className="page-title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Untitled" />
+        </div>
         <div className="page-toolbar-actions">
           <span className="page-status muted small">{status || 'Autosave'}</span>
           <div className="toolbar-actions">

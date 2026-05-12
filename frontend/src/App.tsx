@@ -21,6 +21,19 @@ type AppInfoState = {
   max_upload_size_mb: number
 }
 
+type ThemeMode = 'light' | 'dark'
+
+const THEME_STORAGE_KEY = 'lore-theme'
+
+function readInitialTheme(): ThemeMode {
+  if (typeof window === 'undefined') {
+    return 'dark'
+  }
+
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY)
+  return storedTheme === 'light' ? 'light' : 'dark'
+}
+
 function App() {
   const navigate = useNavigate()
   const [user, setUser] = useState<User | null>(null)
@@ -35,6 +48,13 @@ function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [hotkeysOpen, setHotkeysOpen] = useState(false)
   const [appStatus, setAppStatus] = useState('')
+  const [theme, setTheme] = useState<ThemeMode>(readInitialTheme)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    document.documentElement.style.colorScheme = theme
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme)
+  }, [theme])
 
   useEffect(() => {
     if (!appStatus) return
@@ -74,6 +94,10 @@ function App() {
     setUser(null)
     navigate('/login')
   }, [navigate])
+
+  const handleToggleTheme = useCallback(() => {
+    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+  }, [])
 
   useHotkeys(
     useMemo(
@@ -119,9 +143,11 @@ function App() {
               pages={pages}
               user={user}
               appStatus={appStatus}
+              theme={theme}
               onCreatePage={() => void handleCreatePage()}
               onOpenSearch={() => setSearchOpen(true)}
               onOpenHotkeys={() => setHotkeysOpen(true)}
+              onToggleTheme={handleToggleTheme}
               onLogout={() => void handleLogout()}
             />
           }
@@ -131,7 +157,7 @@ function App() {
           <Route path="files" element={<FilesPage maxUploadSizeMb={appInfo.max_upload_size_mb} />} />
           <Route
             path="settings"
-            element={<SettingsPage user={user} maxUploadSizeMb={appInfo.max_upload_size_mb} appName={appInfo.name} version={appInfo.version} description={appInfo.description} onOpenHotkeys={() => setHotkeysOpen(true)} onLogout={() => void handleLogout()} />}
+            element={<SettingsPage user={user} maxUploadSizeMb={appInfo.max_upload_size_mb} appName={appInfo.name} version={appInfo.version} description={appInfo.description} theme={theme} onToggleTheme={handleToggleTheme} onOpenHotkeys={() => setHotkeysOpen(true)} onLogout={() => void handleLogout()} />}
           />
         </Route>
         <Route path="/login" element={<Navigate to="/" replace />} />

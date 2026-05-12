@@ -615,6 +615,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                     <span className="page-link-icon-paper" />
                   </span>
                   <span className="page-link-copy">
+                    <span className="page-link-label">Nested page</span>
                     <input
                       ref={(element) => {
                         pageLinkTitleRefs.current[block.id] = element
@@ -642,7 +643,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                         }
                       }}
                     />
-                    <span>Nested page</span>
+                    <span className="page-link-description">Open the nested page or rename it inline.</span>
                   </span>
                   <span className="page-link-open">Open</span>
                 </button>
@@ -653,6 +654,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                     <span className="page-link-icon-paper" />
                   </span>
                   <span className="page-link-copy">
+                    <span className="page-link-label">Broken reference</span>
                     <input
                       className="page-link-title"
                       value={block.content || 'Deleted page'}
@@ -675,7 +677,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                         }
                       }}
                     />
-                    <span>Deleted page reference</span>
+                    <span className="page-link-description">The linked page was deleted. Convert this card back to text.</span>
                   </span>
                   <button className="page-link-open" onClick={() => convertPageLinkToText(block.id, block.content || 'Deleted page')}>
                     Convert

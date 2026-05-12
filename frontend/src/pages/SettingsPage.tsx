@@ -7,11 +7,13 @@ type Props = {
   appName: string
   version: string
   description: string
+  theme: 'light' | 'dark'
+  onToggleTheme: () => void
   onOpenHotkeys: () => void
   onLogout: () => void
 }
 
-export function SettingsPage({ user, maxUploadSizeMb, appName, version, description, onOpenHotkeys, onLogout }: Props) {
+export function SettingsPage({ user, maxUploadSizeMb, appName, version, description, theme, onToggleTheme, onOpenHotkeys, onLogout }: Props) {
   return (
     <div className="section-page">
       <div className="section-header">
@@ -28,6 +30,12 @@ export function SettingsPage({ user, maxUploadSizeMb, appName, version, descript
           <p>{description}</p>
           <p>User: {user.username}</p>
           <p>Upload limit: {maxUploadSizeMb} MB</p>
+        </div>
+        <div className="settings-card">
+          <h3>Appearance</h3>
+          <p>Current theme: {theme === 'dark' ? 'Dark' : 'Light'}</p>
+          <p>Switch the workspace between low-glare dark mode and a lighter reading surface.</p>
+          <Button onClick={onToggleTheme}>{theme === 'dark' ? 'Use light theme' : 'Use dark theme'}</Button>
         </div>
         <div className="settings-card">
           <h3>Keyboard shortcuts</h3>
