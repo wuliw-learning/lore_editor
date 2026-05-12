@@ -143,11 +143,8 @@ function App() {
               pages={pages}
               user={user}
               appStatus={appStatus}
-              theme={theme}
               onCreatePage={() => void handleCreatePage()}
               onOpenSearch={() => setSearchOpen(true)}
-              onOpenHotkeys={() => setHotkeysOpen(true)}
-              onToggleTheme={handleToggleTheme}
               onLogout={() => void handleLogout()}
             />
           }

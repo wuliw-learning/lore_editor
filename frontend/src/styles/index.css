@@ -270,7 +270,6 @@ input:focus {
 }
 
 .button:hover,
-.theme-toggle:hover,
 .upload-button:hover,
 .icon-button:hover,
 .page-link-open:hover,
@@ -293,7 +292,6 @@ input:focus {
 
 .button-secondary,
 .upload-button,
-.theme-toggle,
 .status-chip,
 .page-link-open,
 .sidebar-account-card,
@@ -307,7 +305,6 @@ input:focus {
 
 .button-secondary:hover,
 .upload-button:hover,
-.theme-toggle:hover,
 .search-result:hover,
 .slash-item.active,
 .search-result.active,
@@ -409,20 +406,6 @@ input:focus {
   letter-spacing: -0.04em;
 }
 
-.sidebar-brand-copy {
-  max-width: 15rem;
-}
-
-.theme-toggle {
-  min-height: 2.6rem;
-  border-radius: var(--radius-lg);
-  padding: 0.65rem 0.95rem;
-}
-
-.theme-toggle-sidebar {
-  display: none;
-}
-
 .sidebar-nav {
   display: grid;
   gap: 1.15rem;
@@ -445,12 +428,12 @@ input:focus {
   border-radius: var(--radius-lg);
   padding: 0.9rem 1rem;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.7rem;
 }
 
-.footer-actions {
-  justify-content: flex-start;
-  flex-wrap: wrap;
+.sidebar-account-logout {
+  width: 100%;
+  justify-content: center;
 }
 
 .nav-item {
@@ -469,8 +452,7 @@ input:focus {
   font-size: 0.96rem;
 }
 
-.sidebar-nav-button,
-.sidebar-footer-button {
+.sidebar-nav-button {
   min-height: 2.6rem;
   border-radius: var(--radius-md);
   justify-content: flex-start;
@@ -1026,6 +1008,7 @@ input:focus {
 .search-result,
 .icon-button {
   width: 100%;
+  border: none;
   border-radius: var(--radius-md);
   padding: 0.8rem 0.9rem;
   text-align: left;
@@ -1037,6 +1020,20 @@ input:focus {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  box-shadow: none;
+}
+
+.slash-item.active,
+.slash-item:hover {
+  box-shadow: none;
+}
+
+.slash-item:focus,
+.slash-item:focus-visible,
+.slash-item:active {
+  outline: none;
+  border: none;
+  box-shadow: none;
 }
 
 .slash-hint,
@@ -1174,16 +1171,6 @@ input:focus {
   background: var(--bg-panel-strong);
   border: none;
   color: var(--text-primary);
-}
-
-@media (min-width: 961px) {
-  .theme-toggle-sidebar {
-    display: inline-flex;
-  }
-
-  .theme-toggle-topbar {
-    display: none;
-  }
 }
 
 @media (max-width: 960px) {
