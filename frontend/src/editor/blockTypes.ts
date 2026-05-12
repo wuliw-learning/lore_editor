@@ -13,3 +13,7 @@ export const blockOptions = [
   { type: 'divider', label: 'Divider' },
   { type: 'callout', label: 'Callout' },
 ]
+
+export function getMatchingBlockOptions(query: string) {
+  return blockOptions.filter((option) => option.label.toLowerCase().includes(query.toLowerCase()))
+}

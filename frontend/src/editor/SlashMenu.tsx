@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { blockOptions } from './blockTypes'
+import { getMatchingBlockOptions } from './blockTypes'
 
 type Props = {
   query: string
   onSelect: (type: string) => void
   onClose: () => void
+  onActiveTypeChange: (type: string | null) => void
 }
 
-export function SlashMenu({ query, onSelect, onClose }: Props) {
-  const items = useMemo(() => blockOptions.filter((option) => option.label.toLowerCase().includes(query.toLowerCase())), [query])
+export function SlashMenu({ query, onSelect, onClose, onActiveTypeChange }: Props) {
+  const items = useMemo(() => getMatchingBlockOptions(query), [query])
   const [index, setIndex] = useState(0)
   const itemRefs = useRef<Record<number, HTMLButtonElement | null>>({})
 
@@ -21,6 +22,10 @@ export function SlashMenu({ query, onSelect, onClose }: Props) {
     const activeItem = itemRefs.current[index]
     activeItem?.scrollIntoView({ block: 'nearest' })
   }, [index])
+
+  useEffect(() => {
+    onActiveTypeChange(items[index]?.type ?? null)
+  }, [index, items, onActiveTypeChange])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -36,15 +41,11 @@ export function SlashMenu({ query, onSelect, onClose }: Props) {
         event.preventDefault()
         setIndex((current) => (current - 1 + Math.max(items.length, 1)) % Math.max(items.length, 1))
       }
-      if (event.key === 'Enter' && items[index]) {
-        event.preventDefault()
-        onSelect(items[index].type)
-      }
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [index, items, onClose, onSelect])
+  }, [items.length, onClose])
 
   return (
     <div className="slash-menu">

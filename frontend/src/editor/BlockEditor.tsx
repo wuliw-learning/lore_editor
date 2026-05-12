@@ -18,6 +18,7 @@ import { Button } from '../components/Button'
 import { Modal } from '../components/Modal'
 import { useDebouncedEffect } from '../hooks/useDebouncedEffect'
 import type { Block, Page, UploadedFile } from '../types'
+import { getMatchingBlockOptions } from './blockTypes'
 import { SlashMenu } from './SlashMenu'
 
 type Props = {
@@ -99,6 +100,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [slash, setSlash] = useState<SlashState>(null)
+  const [slashActiveType, setSlashActiveType] = useState<string | null>(null)
   const [focusBlockId, setFocusBlockId] = useState<number | null>(null)
   const [skipNextEnterBlockId, setSkipNextEnterBlockId] = useState<number | null>(null)
   const [pageLinkDrafts, setPageLinkDrafts] = useState<Record<number, string>>({})
@@ -361,12 +363,13 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     }
   }
 
-  const selectSlashType = async (blockId: number, type: string) => {
+  const selectSlashType = async (blockId: number, type: string, sourceContent?: string) => {
     const block = blocks.find((item) => item.id === blockId)
     if (!block) return
+    const currentContent = sourceContent ?? block.content
 
     if (type === 'page_link') {
-      const nextTitle = stripSlashCommand(block.content).trim() || 'Untitled page'
+      const nextTitle = stripSlashCommand(currentContent).trim() || 'Untitled page'
       const child = await createPage(nextTitle, pageId)
       patchBlock(blockId, {
         type,
@@ -377,6 +380,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
       setSkipNextEnterBlockId(blockId)
       setFocusBlockId(blockId)
       setSlash(null)
+      setSlashActiveType(null)
       return
     }
 
@@ -387,18 +391,20 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
         metadata: emptyMetadataForType(type),
       })
       setSlash(null)
+      setSlashActiveType(null)
       await openImagePicker(blockId)
       return
     }
 
     patchBlock(blockId, {
       type,
-      content: type === 'divider' ? '' : stripSlashCommand(block.content),
+      content: type === 'divider' ? '' : stripSlashCommand(currentContent),
       metadata: emptyMetadataForType(type),
     })
     setSkipNextEnterBlockId(blockId)
     setFocusBlockId(blockId)
     setSlash(null)
+    setSlashActiveType(null)
   }
 
   const getDropTarget = (event: DragEvent<HTMLDivElement>, blockId: number) => {
@@ -440,6 +446,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   ) => {
     if (event.key === 'Escape') {
       setSlash(null)
+      setSlashActiveType(null)
     }
     if (event.altKey && event.key === 'ArrowUp') {
       event.preventDefault()
@@ -456,6 +463,12 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
       const slashQuery = enableSlashMenu ? getSlashQuery(event.currentTarget.value) : null
       if (slashQuery !== null) {
         event.preventDefault()
+        const selectedType = slash?.blockId === block.id
+          ? slashActiveType ?? getMatchingBlockOptions(slashQuery)[0]?.type ?? null
+          : getMatchingBlockOptions(slashQuery)[0]?.type ?? null
+        if (selectedType) {
+          await selectSlashType(block.id, selectedType, event.currentTarget.value)
+        }
         return
       }
 
@@ -707,8 +720,10 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                       const slashQuery = getSlashQuery(value)
                       if (slashQuery !== null) {
                         setSlash({ blockId: block.id, query: slashQuery })
+                        setSlashActiveType(getMatchingBlockOptions(slashQuery)[0]?.type ?? null)
                       } else if (slash?.blockId === block.id) {
                         setSlash(null)
+                        setSlashActiveType(null)
                       }
                     }}
                     onPaste={async (event) => {
@@ -749,7 +764,15 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
                 </div>
               ) : null}
               {slash?.blockId === block.id ? (
-                <SlashMenu query={slash.query} onSelect={(type) => void selectSlashType(block.id, type)} onClose={() => setSlash(null)} />
+                <SlashMenu
+                  query={slash.query}
+                  onSelect={(type) => void selectSlashType(block.id, type)}
+                  onClose={() => {
+                    setSlash(null)
+                    setSlashActiveType(null)
+                  }}
+                  onActiveTypeChange={setSlashActiveType}
+                />
               ) : null}
               {showDropAfter ? <div className="block-drop-indicator block-drop-indicator-bottom" /> : null}
             </div>
