@@ -15,6 +15,11 @@ Add a screenshot here after first launch:
 - Favorites in the sidebar
 - Block editor with slash menu via `\`
 - Supported blocks: text, page, to-do, H1/H2/H3, bulleted list, numbered list, toggle, quote, divider, callout
+- Sticky sidebar with pages action embedded in the `Pages` section
+- Keyboard block navigation and slash-menu navigation
+- Large text paste split into paragraph blocks on empty-line boundaries
+- Inline nested page rename with fully clickable nested page cards
+- Recovery flow for deleted nested page references
 - Exact-match search across page titles and block content
 - File upload, download, and delete with auth checks
 - Settings page and hotkeys help
@@ -125,10 +130,12 @@ docker compose down
 - `docs/backend.md`
 - `docs/frontend.md`
 - `docs/user-guide.md`
+- `docs/ai-agent/`
 
 ## Notes
 
 - Page deletion is blocked if the page has child pages.
+- Deleting a nested page converts linked page-card references into safe text blocks instead of leaving broken navigation behind.
 - The first version uses exact-match style `LIKE` search rather than full text indexing.
 - Toggle blocks use a simple title/body model rather than nested block trees.
 - On startup, Lore migrates legacy data from the old mistaken `/app/backend/...` storage path into `/app/data` and `/app/storage/uploads` when needed.

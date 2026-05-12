@@ -27,7 +27,7 @@ Use the values from:
 
 ## Create a Root Page
 
-- Click `New page` in the sidebar.
+- In the sidebar, open the `Pages` section and click `+ New`.
 - Or use `Ctrl + N`.
 
 ## Rename a Page
@@ -41,7 +41,8 @@ Use the values from:
 1. Open a page.
 2. In a block, type `\page` or type `\` and choose `Page`.
 3. A child page is created and inserted as a page link block.
-4. Click the page link to open it.
+4. Click anywhere on the page card except the title field to open it.
+5. Rename the nested page inline from the parent page if needed.
 
 ## Add Blocks
 
@@ -49,6 +50,16 @@ Use the values from:
 2. Type normally for text.
 3. Press `Enter` to create the next block.
 4. Type `\` to open the block picker.
+5. Use the `+` handle beside a block to insert a new block between existing blocks.
+
+## Lists
+
+- Press `Enter` on a list item to create the next item.
+- Press `Enter` again on an empty to-do, bulleted, or numbered item to stop the list and continue with a normal text block.
+
+## Large Paste
+
+- Pasting long text into a text block splits separate paragraphs into separate text blocks when they are separated by empty lines.
 
 ## Search
 
@@ -79,7 +90,14 @@ The upload limit is controlled by `MAX_UPLOAD_SIZE_MB` in `.env`.
 - `Ctrl + /`: open hotkeys help
 - `Esc`: close modal or slash menu
 - `ArrowUp / ArrowDown`: move inside slash menu
+- `Alt + ArrowUp`: move to the previous block
+- `Alt + ArrowDown`: move to the next block
 - `Enter`: select slash item or create next block
+
+## Deleted Nested Pages
+
+- If a nested page is deleted, old links are converted into safe text references instead of staying broken navigation cards.
+- If you open a deleted page route directly, Lore shows a recovery screen with actions to return home or go to the parent page.
 
 ## Change Credentials
 

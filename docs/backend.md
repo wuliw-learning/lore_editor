@@ -32,6 +32,8 @@
 
 Deletion is blocked when child pages exist.
 
+When a page is deleted, any `page_link` blocks pointing to it are converted into plain `text` blocks before the delete is committed. This avoids leaving broken nested page navigation in parent pages.
+
 ### Block
 
 - `id`
@@ -44,6 +46,11 @@ Deletion is blocked when child pages exist.
 - `updated_at`
 
 Metadata stores values such as checkbox state, toggle expansion state, callout icon, and linked nested page id.
+
+Special metadata conventions in the current implementation:
+
+- `linked_page_id`: target page id for nested page cards
+- `broken_page_reference`: marker used when a deleted nested page reference has been converted away from a live page link
 
 ### UploadedFile
 
@@ -73,6 +80,8 @@ All non-login routes require the auth dependency from `app/api/deps.py`.
 - `DELETE /api/pages/{page_id}`
 - `POST /api/pages/{page_id}/favorite`
 - `DELETE /api/pages/{page_id}/favorite`
+
+`DELETE /api/pages/{page_id}` also performs nested page link cleanup before removing the page row.
 
 ### Blocks
 
@@ -104,6 +113,15 @@ All non-login routes require the auth dependency from `app/api/deps.py`.
 - The default DB file path is configured through `DATABASE_URL` and should point to `/app/data/lore.db` in Docker.
 - `UPLOAD_DIR` should point to `/app/storage/uploads` in Docker.
 - Startup includes a small legacy migration step that copies the old misplaced SQLite file from `/app/backend/data/` and moves uploads from `/app/backend/storage/uploads/` if the corrected target path is still empty.
+
+## Nested Page Link Cleanup
+
+- The backend scans `page_link` blocks before deleting a page.
+- Matching links are converted to:
+  - `type = "text"`
+  - `content = previous content or deleted page title`
+  - `metadata = {"broken_page_reference": true}`
+- This keeps parent documents readable and prevents dead navigation.
 
 ## File Upload Limits
 

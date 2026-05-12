@@ -28,11 +28,17 @@ The login form is the only unauthenticated screen. After success, the app reload
 The left sidebar includes:
 
 - Lore branding
-- create root page button
+- page creation action inside the `Pages` section
 - favorites list
 - root pages list
 - links to search, files, settings
 - logout and hotkeys help actions
+
+Desktop behavior:
+
+- the sidebar stays sticky while the page editor scrolls
+- the page list scrolls inside the sidebar panel
+- account actions remain pinned to the bottom
 
 ### Page View
 
@@ -43,6 +49,8 @@ The page screen includes:
 - favorite toggle
 - delete action
 - block editor
+
+The page toolbar groups `Saved`, `Favorite`, and `Delete` into a quieter action area aligned with the page title.
 
 ## Block Editor
 
@@ -61,6 +69,8 @@ Implemented block types:
 - divider
 - callout
 
+The editor supports insertion between existing blocks with the `+` handle shown next to each block row.
+
 ### Slash Menu
 
 - Typing `\` at the end of a block opens the slash menu.
@@ -68,12 +78,36 @@ Implemented block types:
 - `ArrowUp` and `ArrowDown` move selection.
 - `Enter` applies the selected block type.
 - `Esc` closes the menu.
+- The active menu option auto-scrolls into view during keyboard navigation.
+- Empty structured blocks show placeholders so inserted headings, quotes, callouts, toggles, and list items remain visible immediately after insertion.
 
 ### Autosave
 
 - Block changes are stored locally in state first.
 - A debounce hook batches save requests.
 - The page header shows `Saving...`, `Saved`, or `Save failed`.
+
+### Keyboard Navigation
+
+- `Alt + ArrowUp` focuses the previous block.
+- `Alt + ArrowDown` focuses the next block.
+- Plain `ArrowUp` and `ArrowDown` also move between text blocks when the caret is already at the start or end of the current block.
+
+### Lists
+
+- Pressing `Enter` on a non-empty list item creates the next list item.
+- Pressing `Enter` on an empty to-do, bulleted, or numbered item exits the list and converts the current block back to `text`.
+
+### Long Text And Paste
+
+- Pasting large text into a text block splits content into new paragraph blocks when empty lines separate paragraphs.
+- Block height recalculation is kept local to the active editor, which reduces viewport jumps when editing below very large blocks.
+
+### Nested Page Cards
+
+- Nested pages render as page-like cards with an inline editable title.
+- The full card is clickable except for the title input, which is reserved for rename.
+- Deleted nested page references render as broken cards with a `Convert` action instead of navigating to a dead route.
 
 ## Search
 
@@ -96,6 +130,11 @@ Implemented block types:
 - upload limit
 - shortcut help entry point
 - logout
+
+## Error And Recovery States
+
+- Deleted page routes show a recovery screen with actions to return home or open the parent page.
+- Broken nested page references can be converted back to plain text directly inside the editor.
 
 ## Adding a New Block Type
 

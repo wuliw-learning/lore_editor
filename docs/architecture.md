@@ -45,13 +45,38 @@ If an older container wrote data into the mistaken legacy path under `/app/backe
 - Nested pages are normal pages with `parent_id` set.
 - The `Page` block type stores the linked nested page id in block metadata.
 
+## Nested Page References
+
+- Creating a `Page` block creates a child page and stores its id in `metadata.linked_page_id`.
+- The frontend renders nested page references as clickable cards with inline title editing.
+- The card is clickable everywhere except the title input, which remains editable.
+- The frontend resolves the displayed title from the current page list so parent cards stay in sync when a child page is renamed.
+
+## Deletion Recovery
+
+- Deleting a page is still blocked when child pages exist.
+- Deleting a nested page target no longer leaves broken navigation behind.
+- Before the page row is deleted, backend cleanup converts any `page_link` blocks pointing at that page into regular `text` blocks and marks them with `broken_page_reference` metadata.
+- The frontend also contains a safety fallback for older data: orphan nested page references render as broken cards that can be converted to plain text.
+- Navigating directly to a deleted page shows a recovery state with a route back to the workspace or the parent page when available.
+
 ## Editing Data Flow
 
 1. Frontend loads a page and its blocks.
 2. Each block is edited in place.
 3. Typing `\` opens a slash menu in the editor.
-4. Edits are autosaved with debounce.
-5. Backend persists block updates in SQLite.
+4. `+` insert handles create new blocks between existing blocks.
+5. Keyboard navigation supports moving between blocks with `Alt + ArrowUp` and `Alt + ArrowDown`.
+6. Large pasted text is split into new paragraph blocks when separated by empty lines.
+7. Edits are autosaved with debounce.
+8. Backend persists block updates in SQLite.
+
+## Sidebar Behavior
+
+- The sidebar is sticky on desktop and remains visible while the editor scrolls.
+- The page creation action lives inside the `Pages` section instead of the branding header.
+- Sidebar navigation scrolls inside the sidebar panel while account actions remain pinned to the bottom.
+- On mobile, the sidebar still switches to a slide-in drawer.
 
 ## Search
 
