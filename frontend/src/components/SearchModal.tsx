@@ -2,16 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { search } from '../api/pages'
 import type { SearchResult } from '../types'
-import { Modal } from './Modal'
 
 type Props = {
   query: string
   onQueryChange: (value: string) => void
-  onClose: () => void
   onSelect: (pageId: number) => void
 }
 
-export function SearchModal({ query, onQueryChange, onClose, onSelect }: Props) {
+export function SearchModal({ query, onQueryChange, onSelect }: Props) {
   const [results, setResults] = useState<SearchResult[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -62,30 +60,29 @@ export function SearchModal({ query, onQueryChange, onClose, onSelect }: Props) 
   }, [activeIndex, onSelect, results])
 
   return (
-    <Modal title="Search" onClose={onClose}>
-      <div className="search-modal">
-        <input
-          autoFocus
-          placeholder="Search pages and blocks"
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-        />
+    <div className="search-panel" role="listbox" aria-label="Search results">
+      <div className="search-panel-header">
         <div className="search-summary muted small">{loading ? 'Searching...' : summary}</div>
-        <div className="search-results">
-          {!loading && results.length === 0 ? <p className="muted">Exact matches will appear here.</p> : null}
-          {results.map((result, index) => (
-            <button
-              key={`${result.page_id}-${result.match_type}-${result.snippet}`}
-              className={`search-result${index === activeIndex ? ' active' : ''}`}
-              onMouseEnter={() => setActiveIndex(index)}
-              onClick={() => onSelect(result.page_id)}
-            >
-              <strong>{result.page_title}</strong>
-              <span>{result.match_type === 'title' ? 'Title match' : result.snippet}</span>
-            </button>
-          ))}
-        </div>
+        {query ? (
+          <button className="search-clear-button" onClick={() => onQueryChange('')}>
+            Clear
+          </button>
+        ) : null}
       </div>
-    </Modal>
+      <div className="search-results">
+        {!loading && results.length === 0 ? <p className="muted">Exact matches will appear here.</p> : null}
+        {results.map((result, index) => (
+          <button
+            key={`${result.page_id}-${result.match_type}-${result.snippet}`}
+            className={`search-result${index === activeIndex ? ' active' : ''}`}
+            onMouseEnter={() => setActiveIndex(index)}
+            onClick={() => onSelect(result.page_id)}
+          >
+            <strong>{result.page_title}</strong>
+            <span>{result.match_type === 'title' ? 'Title match' : result.snippet}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }

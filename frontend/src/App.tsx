@@ -6,7 +6,6 @@ import { createPage, getAppInfo, listPages } from './api/pages'
 import { AppShell } from './components/AppShell'
 import { HotkeysModal } from './components/HotkeysModal'
 import { LoginForm } from './components/LoginForm'
-import { SearchModal } from './components/SearchModal'
 import { useHotkeys } from './hooks/useHotkeys'
 import { FilesPage } from './pages/FilesPage'
 import { PageView } from './pages/PageView'
@@ -146,8 +145,14 @@ function App() {
               appStatus={appStatus}
               onCreatePage={() => void handleCreatePage()}
               onOpenSearch={() => setSearchOpen(true)}
+              searchOpen={searchOpen}
+              onCloseSearch={() => setSearchOpen(false)}
               searchQuery={searchQuery}
               onSearchQueryChange={setSearchQuery}
+              onSelectSearch={(pageId) => {
+                setSearchOpen(false)
+                navigate(`/pages/${pageId}`)
+              }}
               onLogout={() => void handleLogout()}
             />
           }
@@ -162,17 +167,6 @@ function App() {
         </Route>
         <Route path="/login" element={<Navigate to="/" replace />} />
       </Routes>
-      {searchOpen ? (
-        <SearchModal
-          query={searchQuery}
-          onQueryChange={setSearchQuery}
-          onClose={() => setSearchOpen(false)}
-          onSelect={(pageId) => {
-            setSearchOpen(false)
-            navigate(`/pages/${pageId}`)
-          }}
-        />
-      ) : null}
       {hotkeysOpen ? <HotkeysModal onClose={() => setHotkeysOpen(false)} /> : null}
     </>
   )

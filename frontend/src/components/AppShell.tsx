@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import type { Page, User } from '../types'
 import { Button } from './Button'
+import { SearchModal } from './SearchModal'
 
 function SearchIcon() {
   return (
@@ -36,21 +37,44 @@ type Props = {
   appStatus: string
   onCreatePage: () => void
   onOpenSearch: () => void
+  searchOpen: boolean
+  onCloseSearch: () => void
   searchQuery: string
   onSearchQueryChange: (value: string) => void
+  onSelectSearch: (pageId: number) => void
   onLogout: () => void
 }
 
-export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, searchQuery, onSearchQueryChange, onLogout }: Props) {
+export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, searchOpen, onCloseSearch, searchQuery, onSearchQueryChange, onSelectSearch, onLogout }: Props) {
   const location = useLocation()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const searchShellRef = useRef<HTMLDivElement | null>(null)
+  const searchInputRef = useRef<HTMLInputElement | null>(null)
   const favorites = pages.filter((page) => page.is_favorite)
   const roots = pages.filter((page) => page.parent_id === null)
 
   useEffect(() => {
     setSidebarOpen(false)
   }, [location.pathname])
+
+  useEffect(() => {
+    if (!searchOpen) return
+    searchInputRef.current?.focus({ preventScroll: true })
+  }, [searchOpen])
+
+  useEffect(() => {
+    if (!searchOpen) return
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!searchShellRef.current?.contains(event.target as Node)) {
+        onCloseSearch()
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    return () => document.removeEventListener('mousedown', handlePointerDown)
+  }, [searchOpen, onCloseSearch])
 
   return (
     <div className="app-layout">
@@ -114,25 +138,35 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, s
               Lore
             </button>
           </div>
-          <div className="content-topbar-right">
-            <button className={`status-chip${appStatus ? ' visible' : ''}`} aria-live="polite">
-              {appStatus || 'Autosave on'}
-            </button>
+          <div className="content-topbar-search-area" ref={searchShellRef}>
             <label className="topbar-search" aria-label="Search pages and blocks">
               <span className="topbar-search-icon"><SearchIcon /></span>
               <input
+                ref={searchInputRef}
                 className="topbar-search-input"
                 placeholder="Search pages and blocks"
                 value={searchQuery}
                 onFocus={onOpenSearch}
                 onChange={(event) => {
                   onSearchQueryChange(event.target.value)
-                  if (!searchQuery) {
+                  if (!searchOpen) {
                     onOpenSearch()
                   }
                 }}
               />
             </label>
+            {searchOpen ? (
+              <SearchModal
+                query={searchQuery}
+                onQueryChange={onSearchQueryChange}
+                onSelect={onSelectSearch}
+              />
+            ) : null}
+          </div>
+          <div className="content-topbar-right">
+            <button className={`status-chip${appStatus ? ' visible' : ''}`} aria-live="polite">
+              {appStatus || 'Autosave on'}
+            </button>
           </div>
         </div>
         <Outlet />
