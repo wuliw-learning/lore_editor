@@ -26,6 +26,7 @@
 - Active option auto-scrolls into view.
 - `Enter` applies the selected block type.
 - `Esc` closes the menu.
+- While the slash menu is open, its keyboard handling takes priority over normal block-to-block arrow navigation.
 
 ## Structured Block Visibility
 

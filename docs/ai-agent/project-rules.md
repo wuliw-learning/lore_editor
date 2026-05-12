@@ -43,10 +43,11 @@ This document is the primary rule set for AI agents working on Lore. It consolid
 
 1. Slash menu uses `ArrowUp`, `ArrowDown`, `Enter`, and `Esc`.
 2. Active slash-menu items must stay visible while navigating.
-3. `Alt + ArrowUp` moves to the previous block.
-4. `Alt + ArrowDown` moves to the next block.
-5. Plain `ArrowUp` and `ArrowDown` may cross block boundaries when the caret is already at the start or end of a text block.
-6. Any change to keyboard behavior requires updating hotkey documentation.
+3. While the slash menu is open, those keys must not leak into normal block navigation.
+4. `Alt + ArrowUp` moves to the previous block.
+5. `Alt + ArrowDown` moves to the next block.
+6. Plain `ArrowUp` and `ArrowDown` may cross block boundaries when the caret is already at the start or end of a text block.
+7. Any change to keyboard behavior requires updating hotkey documentation.
 
 ## Text And Paste Rules
 

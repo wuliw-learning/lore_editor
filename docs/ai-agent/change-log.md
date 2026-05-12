@@ -24,6 +24,7 @@
 20. Inserted slash blocks now replace the placeholder block in place without leaving a stray `\` marker.
 21. Desktop block drag and drop was added on top of the existing reorder API.
 22. Inline image blocks were added with direct upload and Files-library selection.
+23. Slash-menu keyboard handling now stays local to the open menu instead of leaking into block navigation.
 
 ## Guidance For Future Agents
 

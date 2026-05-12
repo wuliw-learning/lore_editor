@@ -99,7 +99,7 @@ The upload limit is controlled by `MAX_UPLOAD_SIZE_MB` in `.env`.
 - `Ctrl + S`: keep the save interaction familiar while autosave is enabled
 - `Ctrl + /`: open hotkeys help
 - `Esc`: close modal or slash menu
-- `ArrowUp / ArrowDown`: move inside slash menu
+- `ArrowUp / ArrowDown`: move inside slash menu while it is open
 - `Alt + ArrowUp`: move to the previous block
 - `Alt + ArrowDown`: move to the next block
 - `Enter`: select slash item or create next block

@@ -81,6 +81,7 @@ It also supports desktop drag-and-drop reordering through a dedicated drag handl
 - `Enter` applies the selected block type.
 - `Esc` closes the menu.
 - The active menu option auto-scrolls into view during keyboard navigation.
+- While the menu is open, slash-menu keyboard handling takes precedence over normal block navigation.
 - Empty structured blocks show placeholders so inserted headings, quotes, callouts, toggles, and list items remain visible immediately after insertion.
 - Slash-selected blocks replace the current placeholder block in place instead of leaving the raw `\` command behind.
 
