@@ -104,6 +104,10 @@ export async function uploadFile(file: File) {
   return response.json() as Promise<UploadedFile>
 }
 
+export function getFileContentUrl(fileId: number) {
+  return `/api/files/${fileId}`
+}
+
 export function deleteFile(fileId: number) {
   return api<{ status: string }>(`/api/files/${fileId}`, { method: 'DELETE' })
 }

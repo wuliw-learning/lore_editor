@@ -51,6 +51,15 @@ Use the values from:
 3. Press `Enter` to create the next block.
 4. Type `\` to open the block picker.
 5. Use the `+` handle beside a block to insert a new block between existing blocks.
+6. Drag a block by its drag handle to move it to a new position.
+
+Slash-selected blocks replace the current insertion point directly, so you can insert a heading, quote, image, or other block between two existing text blocks.
+
+## Inline Images
+
+1. Open the block picker with `\` and choose `Image`.
+2. Upload an image directly, or pick one from the existing `Files` library.
+3. The image appears inline in the page and can keep an optional caption below it.
 
 ## Lists
 
@@ -77,8 +86,9 @@ Use the values from:
 
 1. Open the `Files` section.
 2. Upload a file.
-3. Use `Download` to retrieve it.
-4. Use `Delete` to remove it.
+3. Reuse uploaded images from inline image blocks inside pages.
+4. Use `Download` to retrieve it.
+5. Use `Delete` to remove it.
 
 The upload limit is controlled by `MAX_UPLOAD_SIZE_MB` in `.env`.
 

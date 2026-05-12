@@ -73,6 +73,22 @@ def download_file(
     return FileResponse(path=file_path, filename=item.original_name, media_type=item.mime_type)
 
 
+@router.get("/{file_id}")
+def read_file(
+    file_id: int,
+    db: Session = Depends(get_db),
+    _user: dict[str, str] = Depends(require_auth),
+) -> FileResponse:
+    item = db.get(UploadedFileModel, file_id)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+    file_path = settings.resolved_upload_dir / item.stored_name
+    if not file_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Stored file not found")
+
+    return FileResponse(path=file_path, media_type=item.mime_type)
+
+
 @router.delete("/{file_id}")
 def delete_file(
     file_id: int,

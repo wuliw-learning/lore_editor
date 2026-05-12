@@ -21,6 +21,9 @@
 17. Frontend now handles deleted nested page references and deleted page routes with explicit recovery states.
 18. Slash-selected inserted blocks no longer create an accidental extra block from the same Enter press.
 19. Empty structured blocks now expose placeholders so inserted headings and similar blocks stay visible.
+20. Inserted slash blocks now replace the placeholder block in place without leaving a stray `\` marker.
+21. Desktop block drag and drop was added on top of the existing reorder API.
+22. Inline image blocks were added with direct upload and Files-library selection.
 
 ## Guidance For Future Agents
 

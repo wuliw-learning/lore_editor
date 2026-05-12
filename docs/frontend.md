@@ -68,8 +68,10 @@ Implemented block types:
 - quote
 - divider
 - callout
+- image
 
 The editor supports insertion between existing blocks with the `+` handle shown next to each block row.
+It also supports desktop drag-and-drop reordering through a dedicated drag handle on each block row.
 
 ### Slash Menu
 
@@ -80,6 +82,7 @@ The editor supports insertion between existing blocks with the `+` handle shown 
 - `Esc` closes the menu.
 - The active menu option auto-scrolls into view during keyboard navigation.
 - Empty structured blocks show placeholders so inserted headings, quotes, callouts, toggles, and list items remain visible immediately after insertion.
+- Slash-selected blocks replace the current placeholder block in place instead of leaving the raw `\` command behind.
 
 ### Autosave
 
@@ -109,6 +112,12 @@ The editor supports insertion between existing blocks with the `+` handle shown 
 - The full card is clickable except for the title input, which is reserved for rename.
 - Deleted nested page references render as broken cards with a `Convert` action instead of navigating to a dead route.
 
+### Inline Images
+
+- `image` blocks render directly in the editor flow.
+- The image picker supports both direct upload and selecting from the existing Files library.
+- Image blocks keep a caption textarea so the block still participates in normal block navigation and autosave.
+
 ## Search
 
 - Search opens in a modal.
@@ -120,6 +129,7 @@ The editor supports insertion between existing blocks with the `+` handle shown 
 - Lists uploaded files
 - Uploads a new file
 - Downloads through the backend endpoint
+- Serves files inline through an authenticated content endpoint for embedded images
 - Deletes an uploaded file
 
 ## Settings Page

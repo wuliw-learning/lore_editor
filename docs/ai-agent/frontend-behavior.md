@@ -12,6 +12,13 @@
 - The editor works as a block list, not a markdown preview split.
 - `+` handles insert new blocks between existing blocks.
 - Typing `\` at the end of a text block opens the slash menu.
+- Slash-selected blocks replace the current placeholder block in place and must not leave a stray `\` token or create an extra block from the same Enter press.
+
+## Block Reordering
+
+- Blocks can be reordered with the drag handle on desktop.
+- Dragging shows an explicit drop indicator before or after the hovered block.
+- Reordering persists through the existing block reorder API.
 
 ## Slash Menu
 
@@ -48,6 +55,12 @@
 
 - Large text paste into a text block is split into paragraph blocks using empty-line boundaries.
 - Height recalculation should stay local to affected textareas to avoid viewport jumps.
+
+## Inline Images
+
+- The editor supports an `image` block rendered inline in the document flow.
+- Images can be uploaded directly from the editor or selected from the existing Files library.
+- Image blocks keep a caption field in the normal block flow so block navigation remains consistent.
 
 ## Important UX Decisions
 

@@ -7,6 +7,7 @@ export const blockOptions = [
   { type: 'heading_3', label: 'Heading 3' },
   { type: 'bulleted_list', label: 'Bulleted list' },
   { type: 'numbered_list', label: 'Numbered list' },
+  { type: 'image', label: 'Image' },
   { type: 'toggle', label: 'Toggle list' },
   { type: 'quote', label: 'Quote' },
   { type: 'divider', label: 'Divider' },
