@@ -20,6 +20,7 @@
 - Active tasks older than 3 days are visually highlighted.
 - The day screen includes a small month calendar for navigating historical task lists.
 - Task descriptions can insert internal links to notebook pages through a page chooser.
+- Repeated saves for the same task must ignore stale responses so older task updates cannot overwrite newer ones.
 
 ## Themes
 
@@ -42,6 +43,7 @@
 - `+` handles insert new blocks between existing blocks.
 - Typing `\` at the end of a text block opens the slash menu.
 - Slash-selected blocks replace the current placeholder block in place and must not leave a stray `\` token or create an extra block from the same Enter press.
+- Autosave must preserve the latest local text even when older save responses return later.
 
 ## Block Reordering
 
@@ -73,6 +75,7 @@
 - `Alt + ArrowDown` moves to the next non-divider block.
 - Plain arrow keys also cross text blocks when the caret is already at a boundary.
 - `page_link` title inputs participate in the same navigation model.
+- `Ctrl + S` and `Cmd + S` flush pending page and block edits immediately.
 
 ## Nested Page Cards
 

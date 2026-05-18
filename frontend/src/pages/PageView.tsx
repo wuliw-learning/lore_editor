@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { deletePage, favoritePage, getPage, unfavoritePage, updatePage } from '../api/pages'
 import { Button } from '../components/Button'
 import { BlockEditor } from '../editor/BlockEditor'
+import { FORCE_SAVE_EVENT } from '../saveEvents'
 import type { Page, PageDetail } from '../types'
 
 function getTitleLengthClass(value: string) {
@@ -74,16 +75,34 @@ export function PageView({ pages, onRefreshPages }: Props) {
   const [title, setTitle] = useState('')
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
+  const titleRef = useRef('')
   const parentPageId = pages.find((candidate) => candidate.id === pageId)?.parent_id ?? null
+
+  titleRef.current = title
 
   const refresh = async () => {
     try {
       const data = await getPage(pageId)
       setPage(data)
       setTitle(data.title)
+      titleRef.current = data.title
       setError('')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load page')
+    }
+  }
+
+  const saveTitle = async () => {
+    if (!page || titleRef.current === page.title) return
+
+    setStatus('Saving...')
+    try {
+      const updated = await updatePage(page.id, { title: titleRef.current })
+      setPage((current) => (current && current.id === updated.id ? updated : current))
+      setStatus(titleRef.current === updated.title ? 'Saved' : 'Saving...')
+      await onRefreshPages()
+    } catch {
+      setStatus('Save failed')
     }
   }
 
@@ -95,19 +114,20 @@ export function PageView({ pages, onRefreshPages }: Props) {
 
   useEffect(() => {
     const timer = window.setTimeout(async () => {
-      if (!page || title === page.title) return
-      try {
-        const updated = await updatePage(page.id, { title })
-        setPage(updated)
-        setStatus('Saved')
-        await onRefreshPages()
-      } catch {
-        setStatus('Save failed')
-      }
+      await saveTitle()
     }, 400)
 
     return () => window.clearTimeout(timer)
-  }, [title, page, onRefreshPages])
+  }, [title, page])
+
+  useEffect(() => {
+    const listener = () => {
+      void saveTitle()
+    }
+
+    window.addEventListener(FORCE_SAVE_EVENT, listener)
+    return () => window.removeEventListener(FORCE_SAVE_EVENT, listener)
+  }, [page, title])
 
   if (error) {
     return (

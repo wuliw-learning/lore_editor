@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import { createTask, getTaskCalendar, getTasksForDay, syncTasks, updateTask } from '../api/tasks'
@@ -169,11 +169,15 @@ function TaskModal({ state, pages, readOnly, onClose, onSubmit }: { state: TaskM
   const [title, setTitle] = useState(state?.task?.title ?? '')
   const [description, setDescription] = useState(state?.task?.description ?? '')
   const [pageQuery, setPageQuery] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     setTitle(state?.task?.title ?? '')
     setDescription(state?.task?.description ?? '')
     setPageQuery('')
+    setSubmitting(false)
+    setSubmitError('')
   }, [state])
 
   if (!state) return null
@@ -219,9 +223,23 @@ function TaskModal({ state, pages, readOnly, onClose, onSubmit }: { state: TaskM
         ) : null}
         {!readOnly ? (
           <div className="modal-actions">
-            <Button onClick={() => void onSubmit({ title, description })}>Save task</Button>
+            <Button
+              onClick={() => {
+                if (submitting) return
+                setSubmitting(true)
+                setSubmitError('')
+                void onSubmit({ title, description })
+                  .catch((err) => {
+                    setSubmitError(err instanceof Error ? err.message : 'Failed to save task')
+                  })
+                  .finally(() => setSubmitting(false))
+              }}
+            >
+              {submitting ? 'Saving...' : 'Save task'}
+            </Button>
           </div>
         ) : null}
+        {submitError ? <div className="error-box">{submitError}</div> : null}
       </div>
     </Modal>
   )
@@ -239,6 +257,17 @@ export function TodoDayPage({ pages }: Props) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [modalState, setModalState] = useState<TaskModalState>(null)
+  const latestTaskMutationRef = useRef<Record<number, number>>({})
+  const nextTaskMutationIdRef = useRef(0)
+
+  const beginTaskMutation = (taskId: number) => {
+    const requestId = nextTaskMutationIdRef.current + 1
+    nextTaskMutationIdRef.current = requestId
+    latestTaskMutationRef.current[taskId] = requestId
+    return requestId
+  }
+
+  const isLatestTaskMutation = (taskId: number, requestId: number) => latestTaskMutationRef.current[taskId] === requestId
 
   useEffect(() => {
     if (!isValidDate) {
@@ -283,20 +312,33 @@ export function TodoDayPage({ pages }: Props) {
   }
 
   const saveTask = async (taskId: number, payload: { title: string; description: string }) => {
-    const saved = await updateTask(taskId, payload)
-    setTasks((current) => current.map((task) => (task.id === taskId ? saved : task)))
-    setModalState(null)
+    setError('')
+    const requestId = beginTaskMutation(taskId)
+    try {
+      const saved = await updateTask(taskId, payload)
+      setTasks((current) => current.map((task) => (task.id === taskId && isLatestTaskMutation(taskId, requestId) ? saved : task)))
+      if (isLatestTaskMutation(taskId, requestId)) {
+        setModalState((current) => (current?.task?.id === taskId ? null : current))
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save task')
+      throw err
+    }
   }
 
   const changeTaskStatus = async (taskId: number, status: TaskStatus) => {
+    const previousTask = tasks.find((task) => task.id === taskId)
+    const requestId = beginTaskMutation(taskId)
+    setError('')
     patchTaskLocally(taskId, { status })
     try {
       const saved = await updateTask(taskId, { status })
-      setTasks((current) => current.map((task) => (task.id === taskId ? saved : task)))
+      setTasks((current) => current.map((task) => (task.id === taskId && isLatestTaskMutation(taskId, requestId) ? saved : task)))
     } catch (err) {
+      if (isLatestTaskMutation(taskId, requestId) && previousTask) {
+        setTasks((current) => current.map((task) => (task.id === taskId ? previousTask : task)))
+      }
       setError(err instanceof Error ? err.message : 'Failed to update task')
-      const response = await getTasksForDay(selectedDate)
-      setTasks(response.items)
     }
   }
 

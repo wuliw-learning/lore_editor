@@ -119,7 +119,9 @@ It also supports desktop drag-and-drop reordering through a dedicated drag handl
 
 - Block changes are stored locally in state first.
 - A debounce hook batches save requests.
+- Late autosave responses must not overwrite newer local typing; local edits stay authoritative until their own revision is confirmed.
 - The page header exposes save state through a compact icon that reflects `Saving...`, `Saved`, or `Save failed`.
+- `Ctrl + S` triggers an immediate flush of pending page-title and block edits instead of showing a fake saved state.
 
 ### Keyboard Navigation
 
@@ -172,6 +174,11 @@ It also supports desktop drag-and-drop reordering through a dedicated drag handl
 - Lists tasks whose status is `backlog`
 - Opens task descriptions in a read-only modal
 - Preserves clickable links back into notebook pages
+
+## Task Saving
+
+- Task edit submits are single-flight from the modal to avoid duplicate creates or updates.
+- When multiple updates target the same task, late responses must not overwrite newer task state.
 
 ## Settings Page
 

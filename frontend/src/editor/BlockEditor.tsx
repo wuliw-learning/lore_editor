@@ -17,6 +17,7 @@ import {
 import { Button } from '../components/Button'
 import { Modal } from '../components/Modal'
 import { useDebouncedEffect } from '../hooks/useDebouncedEffect'
+import { FORCE_SAVE_EVENT } from '../saveEvents'
 import type { Block, Page, UploadedFile } from '../types'
 import { getMatchingBlockOptions } from './blockTypes'
 import { SlashMenu } from './SlashMenu'
@@ -38,6 +39,13 @@ type DropIndicator = {
   blockId: number
   position: 'before' | 'after'
 } | null
+
+type EditorBlock = Block & {
+  localRevision: number
+  lastSavedRevision: number
+  inFlightRevision: number | null
+  saveError: boolean
+}
 
 const SLASH_COMMAND_REGEX = /\\([^\s]*)$/
 
@@ -83,12 +91,22 @@ function getBlockPlaceholder(type: string, isFirstBlock: boolean): string {
   return isFirstBlock ? 'Start typing or enter \\ to choose a block' : ''
 }
 
-function resequenceBlocks(items: Block[]): Block[] {
+function resequenceBlocks<T extends { sort_order: number }>(items: T[]): T[] {
   return items.map((block, index) => ({ ...block, sort_order: index }))
 }
 
-function buildReorderPayload(items: Block[]) {
+function buildReorderPayload<T extends { id: number; sort_order: number }>(items: T[]) {
   return items.map((block) => ({ id: block.id, sort_order: block.sort_order }))
+}
+
+function createEditorBlock(block: Block): EditorBlock {
+  return {
+    ...block,
+    localRevision: 0,
+    lastSavedRevision: 0,
+    inFlightRevision: null,
+    saveError: false,
+  }
 }
 
 function isImageFile(file: UploadedFile): boolean {
@@ -97,7 +115,7 @@ function isImageFile(file: UploadedFile): boolean {
 
 export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Props) {
   const navigate = useNavigate()
-  const [blocks, setBlocks] = useState<Block[]>([])
+  const [blocks, setBlocks] = useState<EditorBlock[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [slash, setSlash] = useState<SlashState>(null)
@@ -113,9 +131,14 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   const inputRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
   const pageLinkTitleRefs = useRef<Record<number, HTMLInputElement | null>>({})
   const imageInputRefs = useRef<Record<number, HTMLInputElement | null>>({})
+  const blocksRef = useRef<EditorBlock[]>([])
 
   const sortedBlocks = useMemo(() => [...blocks].sort((a, b) => a.sort_order - b.sort_order), [blocks])
   const pageTitleMap = useMemo(() => new Map(pages.map((page) => [page.id, page.title])), [pages])
+
+  useEffect(() => {
+    blocksRef.current = blocks
+  }, [blocks])
 
   const syncHeight = (element: HTMLTextAreaElement | null) => {
     if (!element) return
@@ -192,7 +215,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     setLoading(true)
     setError('')
     try {
-      setBlocks(resequenceBlocks(await listBlocks(pageId)))
+      setBlocks(resequenceBlocks(await listBlocks(pageId)).map(createEditorBlock))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load blocks')
     } finally {
@@ -204,45 +227,125 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     void refresh()
   }, [pageId])
 
-  useDebouncedEffect(
-    () => {
-      const dirty = blocks.filter((block) => block.updated_at === 'local')
-      if (dirty.length === 0) return
-      onSavingState('Saving...')
-      Promise.all(
-        dirty.map(async (block) => {
-          const saved = await updateBlock(block.id, {
+  const flushPendingSaves = async (force = false) => {
+    const pending = blocksRef.current.filter(
+      (block) =>
+        block.localRevision > block.lastSavedRevision &&
+        block.inFlightRevision === null &&
+        (force || !block.saveError),
+    )
+    if (pending.length === 0) {
+      return
+    }
+
+    const revisions = new Map(pending.map((block) => [block.id, block.localRevision]))
+    setBlocks((current) =>
+      current.map((block) => {
+        const revision = revisions.get(block.id)
+        if (revision === undefined) return block
+        return { ...block, inFlightRevision: revision, saveError: false }
+      }),
+    )
+    onSavingState('Saving...')
+
+    try {
+      const savedBlocks = await Promise.all(
+        pending.map((block) =>
+          updateBlock(block.id, {
             type: block.type,
             content: block.content,
             metadata: block.metadata,
             sort_order: block.sort_order,
-          })
-          return saved
+          }),
+        ),
+      )
+
+      const savedBlockMap = new Map(savedBlocks.map((block) => [block.id, block]))
+      setBlocks((current) => {
+        const next = current.map((block) => {
+          const saved = savedBlockMap.get(block.id)
+          const savedRevision = revisions.get(block.id)
+          if (!saved || savedRevision === undefined) {
+            return block
+          }
+
+          if (block.localRevision === savedRevision) {
+            return {
+              ...saved,
+              localRevision: block.localRevision,
+              lastSavedRevision: savedRevision,
+              inFlightRevision: null,
+              saveError: false,
+            }
+          }
+
+          return {
+            ...block,
+            updated_at: saved.updated_at,
+            lastSavedRevision: Math.max(block.lastSavedRevision, savedRevision),
+            inFlightRevision: null,
+            saveError: false,
+          }
+        })
+
+        const hasDirty = next.some((block) => block.localRevision > block.lastSavedRevision)
+        onSavingState(hasDirty ? 'Saving...' : 'Saved')
+        return next
+      })
+    } catch {
+      setBlocks((current) =>
+        current.map((block) => {
+          const revision = revisions.get(block.id)
+          if (revision === undefined) return block
+          return { ...block, inFlightRevision: null, saveError: true }
         }),
       )
-        .then((savedBlocks) => {
-          setBlocks((current) => current.map((block) => savedBlocks.find((item) => item.id === block.id) ?? block))
-          onSavingState('Saved')
-        })
-        .catch(() => onSavingState('Save failed'))
+      onSavingState('Save failed')
+    }
+  }
+
+  useDebouncedEffect(
+    () => {
+      void flushPendingSaves(false)
     },
     [blocks],
     500,
   )
 
+  useEffect(() => {
+    const listener = () => {
+      void flushPendingSaves(true)
+    }
+
+    window.addEventListener(FORCE_SAVE_EVENT, listener)
+    return () => window.removeEventListener(FORCE_SAVE_EVENT, listener)
+  }, [])
+
   const patchBlock = (blockId: number, patch: Partial<Block>) => {
+    onSavingState('Saving...')
     setBlocks((current) =>
-      current.map((block) => (block.id === blockId ? { ...block, ...patch, updated_at: 'local' } : block)),
+      current.map((block) =>
+        block.id === blockId
+          ? {
+              ...block,
+              ...patch,
+              localRevision: block.localRevision + 1,
+              saveError: false,
+            }
+          : block,
+      ),
     )
   }
 
   const insertBlockAt = async (index: number, type = 'text') => {
-    const created = await createBlock(pageId, {
-      type,
-      content: '',
-      metadata: emptyMetadataForType(type),
-      sort_order: index,
-    })
+    const created = createEditorBlock(
+      await createBlock(pageId, {
+        type,
+        content: '',
+        metadata: emptyMetadataForType(type),
+        sort_order: index,
+      }),
+    )
     const nextBlocks = resequenceBlocks([...sortedBlocks.slice(0, index), created, ...sortedBlocks.slice(index)])
     setBlocks(nextBlocks)
     setFocusBlockId(created.id)
@@ -250,17 +353,19 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
   }
 
   const insertTextBlocksAfter = async (afterSortOrder: number, contents: string[]) => {
-    if (contents.length === 0) return [] as Block[]
+    if (contents.length === 0) return [] as EditorBlock[]
 
     const insertIndex = afterSortOrder + 1
-    const createdBlocks: Block[] = []
+    const createdBlocks: EditorBlock[] = []
     for (const [offset, content] of contents.entries()) {
-      const created = await createBlock(pageId, {
-        type: 'text',
-        content,
-        metadata: {},
-        sort_order: insertIndex + offset,
-      })
+      const created = createEditorBlock(
+        await createBlock(pageId, {
+          type: 'text',
+          content,
+          metadata: {},
+          sort_order: insertIndex + offset,
+        }),
+      )
       createdBlocks.push(created)
     }
 
@@ -275,7 +380,7 @@ export function BlockEditor({ pageId, pages, onRefreshPages, onSavingState }: Pr
     return createdBlocks
   }
 
-  const persistReorder = async (nextBlocks: Block[]) => {
+  const persistReorder = async (nextBlocks: EditorBlock[]) => {
     setBlocks(nextBlocks)
     await reorderBlocks(pageId, buildReorderPayload(nextBlocks))
   }

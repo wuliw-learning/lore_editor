@@ -13,6 +13,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { TodoBacklogPage } from './pages/TodoBacklogPage'
 import { TodoDayPage } from './pages/TodoDayPage'
 import { WelcomePage } from './pages/WelcomePage'
+import { requestSaveFlush } from './saveEvents'
 import type { Page, User } from './types'
 
 type AppInfoState = {
@@ -106,11 +107,11 @@ function App() {
       () => [
         { combo: 'ctrl+k', handler: () => setSearchOpen(true) },
         { combo: 'ctrl+n', handler: () => void handleCreatePage() },
-        { combo: 'ctrl+s', handler: () => setAppStatus('Saved') },
+        { combo: 'ctrl+s', handler: () => requestSaveFlush() },
         { combo: 'ctrl+/', handler: () => setHotkeysOpen(true) },
         { combo: 'meta+k', handler: () => setSearchOpen(true) },
         { combo: 'meta+n', handler: () => void handleCreatePage() },
-        { combo: 'meta+s', handler: () => setAppStatus('Saved') },
+        { combo: 'meta+s', handler: () => requestSaveFlush() },
       ],
       [handleCreatePage],
     ),

@@ -7,7 +7,7 @@ type Props = {
 const shortcuts = [
   ['Ctrl + K', 'Open search'],
   ['Ctrl + N', 'Create new root page'],
-  ['Ctrl + S', 'Show saved state'],
+  ['Ctrl + S', 'Flush pending saves'],
   ['Ctrl + /', 'Open hotkeys help'],
   ['Esc', 'Close modal or slash menu'],
   ['ArrowUp / ArrowDown', 'Navigate slash menu'],

@@ -130,7 +130,7 @@ The upload limit is controlled by `MAX_UPLOAD_SIZE_MB` in `.env`.
 
 - `Ctrl + K`: open search
 - `Ctrl + N`: create root page
-- `Ctrl + S`: keep the save interaction familiar while autosave is enabled
+- `Ctrl + S`: flush pending edits immediately while autosave remains enabled
 - `Ctrl + /`: open hotkeys help
 - `Esc`: close modal or slash menu
 - `ArrowUp / ArrowDown`: move inside slash menu while it is open
