@@ -13,6 +13,7 @@ Add a screenshot here after first launch:
 - Single-user password-protected access
 - Root and nested pages
 - Favorites in the sidebar
+- Day-based todo list with backlog and calendar history
 - Block editor with slash menu via `\`
 - Supported blocks: text, page, to-do, H1/H2/H3, bulleted list, numbered list, toggle, quote, divider, callout
 - Sticky sidebar with pages action embedded in the `Pages` section
@@ -23,6 +24,7 @@ Add a screenshot here after first launch:
 - Exact-match search across page titles and block content
 - File upload, download, and delete with auth checks
 - Settings page and hotkeys help
+- Past todo days available in read-only mode
 - One-container deployment with Nginx, React, FastAPI, and SQLite
 
 ## Requirements

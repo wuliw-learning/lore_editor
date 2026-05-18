@@ -32,6 +32,9 @@
 - `DELETE /api/pages/{page_id}` has side effects beyond deleting the row.
 - `DELETE /api/blocks/{block_id}` cannot remove the final block on a page.
 - `PATCH /api/pages/{page_id}/blocks/reorder` is the source of truth after insertions that shift ordering.
+- `POST /api/tasks/sync` materializes missed day entries up to the provided local-date payload.
+- Day carry-over only copies tasks whose status is `active`.
+- `backlog` tasks are excluded from future daily lists and are retrieved through the dedicated backlog endpoint.
 
 ## Regression Risks
 
@@ -39,3 +42,4 @@
 - Breaking the “minimum one block per page” invariant
 - Reintroducing non-persistent storage paths
 - Returning a 200 on unauthorized routes instead of `401`
+- Copying completed or backlog tasks into the next day by mistake

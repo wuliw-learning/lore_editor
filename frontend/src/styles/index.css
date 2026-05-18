@@ -1380,6 +1380,235 @@ input:focus {
   color: var(--text-primary);
 }
 
+.todo-page {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.8fr);
+  gap: 1.4rem;
+  align-items: start;
+}
+
+.todo-main-column,
+.todo-side-column,
+.todo-calendar,
+.todo-calendar-grid,
+.todo-calendar-weekdays,
+.todo-list,
+.task-modal-content,
+.task-link-insert,
+.task-link-options,
+.todo-help-card,
+.todo-backlog-page {
+  display: grid;
+}
+
+.todo-main-column,
+.todo-side-column,
+.todo-calendar,
+.todo-list,
+.task-modal-content,
+.task-link-insert,
+.todo-help-card,
+.todo-backlog-page {
+  gap: 1rem;
+}
+
+.todo-header,
+.todo-header-actions,
+.todo-calendar-header,
+.todo-task-actions,
+.modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.todo-date-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-transform: capitalize;
+}
+
+.todo-readonly-note,
+.todo-help-card,
+.todo-calendar,
+.todo-task-card,
+.task-description-rendered {
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-xl);
+}
+
+.todo-readonly-note {
+  padding: 0.9rem 1rem;
+  color: var(--text-secondary);
+}
+
+.todo-empty-state {
+  padding: 1.2rem 0.1rem;
+}
+
+.todo-list {
+  gap: 0.85rem;
+}
+
+.todo-task-card {
+  padding: 1rem 1.05rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.todo-task-card:hover {
+  transform: translateY(-1px);
+}
+
+.todo-task-card.is-complete {
+  opacity: 0.8;
+}
+
+.todo-task-card.is-complete .todo-task-main strong {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+.todo-task-card.is-stale {
+  box-shadow: inset 3px 0 0 rgba(230, 164, 97, 0.9), var(--shadow-md);
+  background: linear-gradient(90deg, rgba(230, 164, 97, 0.09) 0%, rgba(230, 164, 97, 0.02) 28%, var(--bg-elevated) 100%);
+}
+
+.todo-task-main {
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.todo-task-preview {
+  margin: 0;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.todo-calendar,
+.todo-help-card,
+.task-description-rendered {
+  padding: 1rem;
+}
+
+.todo-calendar-header {
+  justify-content: space-between;
+}
+
+.todo-calendar-weekdays,
+.todo-calendar-grid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.todo-calendar-weekdays {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.todo-calendar-cell {
+  min-height: 3.35rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+  display: grid;
+  place-items: center;
+  gap: 0.1rem;
+  padding: 0.4rem;
+  cursor: pointer;
+}
+
+.todo-calendar-cell:hover:not(:disabled),
+.todo-calendar-cell.is-selected {
+  background: var(--bg-soft-strong);
+  color: var(--text-primary);
+}
+
+.todo-calendar-cell.has-data {
+  box-shadow: inset 0 0 0 1px var(--border-default);
+}
+
+.todo-calendar-cell.is-today {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.todo-calendar-cell:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+.todo-calendar-cell small {
+  font-size: 0.68rem;
+  color: var(--text-soft);
+}
+
+.todo-calendar-cell-empty {
+  background: transparent;
+}
+
+.task-modal-content {
+  padding-top: 0.6rem;
+}
+
+.task-description-input {
+  min-height: 10rem;
+  resize: vertical;
+}
+
+.task-link-options {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.6rem;
+}
+
+.task-link-option {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.8rem 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: var(--bg-soft);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
+.task-link-option:hover,
+.task-description-link:hover {
+  color: var(--text-primary);
+}
+
+.task-description-rendered {
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.task-description-link {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+}
+
+.todo-help-card p {
+  margin: 0;
+}
+
 @media (max-width: 960px) {
   .app-layout {
     grid-template-columns: 1fr;
@@ -1435,6 +1664,10 @@ input:focus {
 .search-panel {
     position: static;
     margin-top: 0.45rem;
+  }
+
+  .todo-page {
+    grid-template-columns: 1fr;
   }
 
   .page-toolbar,
@@ -1523,5 +1756,9 @@ input:focus {
   .block-drop-indicator,
   .slash-menu {
     left: 3.2rem;
+  }
+
+  .todo-task-card {
+    flex-direction: column;
   }
 }

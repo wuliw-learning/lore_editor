@@ -61,6 +61,21 @@ Special metadata conventions in the current implementation:
 - `mime_type`
 - `created_at`
 
+### TaskEntry
+
+- `id`
+- `task_date`
+- `title`
+- `description`
+- `status`
+- `origin_created_at`
+- `previous_entry_id`
+- `sort_order`
+- `created_at`
+- `updated_at`
+
+Tasks are stored as day-specific entries instead of one mutable row. Carry-over to the next day creates a new row that points back to the previous day's entry.
+
 ## Auth
 
 - `POST /api/auth/login`
@@ -101,6 +116,22 @@ All non-login routes require the auth dependency from `app/api/deps.py`.
 - `POST /api/files`
 - `GET /api/files/{file_id}/download`
 - `DELETE /api/files/{file_id}`
+
+### Tasks
+
+- `POST /api/tasks/sync`
+- `GET /api/tasks/day/{task_date}`
+- `POST /api/tasks`
+- `PATCH /api/tasks/{task_id}`
+- `GET /api/tasks/backlog`
+- `GET /api/tasks/calendar?month=YYYY-MM`
+
+Task sync rules:
+
+- current-day sync is driven by the date sent from the frontend
+- only tasks with status `active` are copied into the next day
+- `completed` and `backlog` tasks are not copied forward
+- past days remain queryable as history
 
 ### App Info
 

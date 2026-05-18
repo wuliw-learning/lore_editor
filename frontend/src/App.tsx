@@ -10,6 +10,8 @@ import { useHotkeys } from './hooks/useHotkeys'
 import { FilesPage } from './pages/FilesPage'
 import { PageView } from './pages/PageView'
 import { SettingsPage } from './pages/SettingsPage'
+import { TodoBacklogPage } from './pages/TodoBacklogPage'
+import { TodoDayPage } from './pages/TodoDayPage'
 import { WelcomePage } from './pages/WelcomePage'
 import type { Page, User } from './types'
 
@@ -159,6 +161,9 @@ function App() {
         >
           <Route index element={<WelcomePage />} />
           <Route path="pages/:pageId" element={<PageView pages={pages} onRefreshPages={refreshPages} />} />
+          <Route path="todo" element={<TodoDayPage pages={pages} />} />
+          <Route path="todo/:date" element={<TodoDayPage pages={pages} />} />
+          <Route path="todo/backlog" element={<TodoBacklogPage />} />
           <Route path="files" element={<FilesPage maxUploadSizeMb={appInfo.max_upload_size_mb} />} />
           <Route
             path="settings"

@@ -7,7 +7,19 @@
 - Sidebar footer stays pinned to the bottom.
 - Sidebar account controls now live inside the account block, including logout.
 - `Search`, `Files`, and `Settings` render as compact icon-text navigation rows.
+- `Todo` and `Backlog` also live in that compact utility navigation area.
 - Mobile uses a slide-in drawer instead of sticky desktop positioning.
+
+## Todo Workspace
+
+- `/todo/:date` is the main daily task view.
+- The current day can create and edit tasks.
+- Past days are read-only and must not expose edit actions.
+- Completed tasks sort below active tasks.
+- Tasks moved to backlog disappear from the daily list and appear in `/todo/backlog`.
+- Active tasks older than 3 days are visually highlighted.
+- The day screen includes a small month calendar for navigating historical task lists.
+- Task descriptions can insert internal links to notebook pages through a page chooser.
 
 ## Themes
 

@@ -30,6 +30,32 @@ Use the values from:
 - Open `Settings` and switch between dark and light mode there.
 - Lore starts in dark mode until you explicitly switch to light mode.
 
+## Daily Todo List
+
+1. Open `Todo` in the sidebar.
+2. Lore opens the current day and shows that day's active task list.
+3. Use `Add task` to create a new task.
+4. Open a task to edit its title and description.
+5. Use the page picker inside the task modal to insert links to notebook pages into the description.
+
+Daily carry-over rules:
+
+- unfinished tasks move to the next day automatically
+- completed tasks stay on the day where you completed them
+- backlog tasks do not move forward
+- tasks older than 3 days and still active are highlighted
+
+Past days:
+
+- Use the calendar on the right side of the todo page.
+- Open any previous day to review that day's tasks.
+- Previous days are read-only.
+
+## Backlog
+
+- Use the `Backlog` section in the sidebar to review tasks removed from the main daily list.
+- Clicking `Backlog` on a task removes it from the day view and keeps it in the backlog list.
+
 ## Create a Root Page
 
 - In the sidebar, open the `Pages` section and click `+ New`.

@@ -15,6 +15,7 @@
 - `src/editor/`: block editor and slash menu
 - `src/hooks/`: debounce and hotkey hooks
 - `src/pages/`: page view, files, settings, welcome screen
+- `src/pages/`: page view, todo day, todo backlog, files, settings, welcome screen
 - `src/styles/`: global styling
 
 ## Main UI Areas
@@ -33,6 +34,7 @@ The left sidebar includes:
 - favorites list
 - root pages list
 - account block with logout
+- compact links for `Todo` and `Backlog`
 
 Desktop behavior:
 
@@ -60,6 +62,25 @@ The page screen includes:
 - block editor
 
 The document header is intentionally light: the title no longer sits inside a framed card, long titles scale down by length, and save/favorite/delete live as quiet icons in the upper-right area.
+
+### Todo Workspace
+
+The todo flow is separate from document pages.
+
+- `/todo/:date` shows one day of tasks
+- `/todo/backlog` shows tasks removed from the daily list
+- opening the current day syncs missed days forward using local browser date selection on the frontend
+- only active tasks carry forward to the next day
+- completed tasks remain visible on their day and sort below active tasks
+- backlog tasks disappear from the day list and live only in the backlog section
+- past days are read-only
+
+Task details open in a modal with:
+
+- title editing
+- description editing for the current day
+- rendered internal page links for read-only views and backlog views
+- page-link insertion that writes markdown-style internal links like `[Page title](/pages/123)`
 
 ## Block Editor
 
@@ -145,6 +166,12 @@ It also supports desktop drag-and-drop reordering through a dedicated drag handl
 - Downloads through the backend endpoint
 - Serves files inline through an authenticated content endpoint for embedded images
 - Deletes an uploaded file
+
+## Backlog Page
+
+- Lists tasks whose status is `backlog`
+- Opens task descriptions in a read-only modal
+- Preserves clickable links back into notebook pages
 
 ## Settings Page
 

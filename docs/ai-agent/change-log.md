@@ -33,6 +33,7 @@
 29. Page header actions were converted into quiet upper-right icons for save state, favorite, and delete.
 30. Long page titles now scale down by length instead of relying only on viewport width.
 31. Filled image blocks hide upload and source buttons until the image block is focused.
+32. A dedicated daily todo workspace was added with carry-over rules, backlog separation, and a read-only history calendar for past days.
 
 ## Guidance For Future Agents
 

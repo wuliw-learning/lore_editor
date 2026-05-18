@@ -22,6 +22,15 @@ function FilesIcon() {
   )
 }
 
+function TodoIcon() {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="2.5" y="2.8" width="11" height="10.7" rx="2" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M5 6.1h6M5 8.5h6M5 10.9h3.5" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function SettingsIcon() {
   return (
     <svg viewBox="0 0 16 16" aria-hidden="true">
@@ -87,6 +96,8 @@ export function AppShell({ pages, user, appStatus, onCreatePage, onOpenSearch, s
         </div>
         <div className="sidebar-actions">
           <Button className="sidebar-nav-button sidebar-link-button" onClick={onOpenSearch}><span className="sidebar-link-icon"><SearchIcon /></span><span>Search</span></Button>
+          <Button className="sidebar-nav-button sidebar-link-button" onClick={() => navigate('/todo')}><span className="sidebar-link-icon"><TodoIcon /></span><span>Todo</span></Button>
+          <Button className="sidebar-nav-button sidebar-link-button" onClick={() => navigate('/todo/backlog')}><span className="sidebar-link-icon"><TodoIcon /></span><span>Backlog</span></Button>
           <Button className="sidebar-nav-button sidebar-link-button" onClick={() => navigate('/files')}><span className="sidebar-link-icon"><FilesIcon /></span><span>Files</span></Button>
           <Button className="sidebar-nav-button sidebar-link-button" onClick={() => navigate('/settings')}><span className="sidebar-link-icon"><SettingsIcon /></span><span>Settings</span></Button>
         </div>

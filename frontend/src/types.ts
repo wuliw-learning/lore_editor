@@ -47,3 +47,31 @@ export type UploadedFile = {
   mime_type: string
   created_at: string
 }
+
+export type TaskStatus = 'active' | 'completed' | 'backlog'
+
+export type TaskEntry = {
+  id: number
+  task_date: string
+  title: string
+  description: string
+  status: TaskStatus
+  origin_created_at: string
+  previous_entry_id: number | null
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export type TaskDayResponse = {
+  task_date: string
+  items: TaskEntry[]
+}
+
+export type TaskCalendarDay = {
+  task_date: string
+  total_count: number
+  completed_count: number
+  active_count: number
+  backlog_count: number
+}

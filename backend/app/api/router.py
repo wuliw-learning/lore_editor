@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.routes import app_meta, auth, blocks, files, pages, search
+from app.api.routes import app_meta, auth, blocks, files, pages, search, tasks
 
 
 api_router = APIRouter()
@@ -10,3 +10,4 @@ api_router.include_router(pages.router, prefix="/pages", tags=["pages"])
 api_router.include_router(blocks.router, tags=["blocks"])
 api_router.include_router(search.router, prefix="/search", tags=["search"])
 api_router.include_router(files.router, prefix="/files", tags=["files"])
+api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
