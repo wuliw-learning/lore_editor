@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "watcher": {
+    "ignore": [
+      ".venv/**",
+      "venv/**",
+      "env/**",
+      "frontend/node_modules/**",
+      "frontend/dist/**",
+      "storage/uploads/**",
+      "data/**"
+    ]
+  }
+}
